@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Logins vs usuarios, CREATE LOGIN, CREATE USER, roles fijos de servidor y BD, roles personalizados.">
+  <title>Logins, Usuarios y Roles · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 7 · Seguridad</a><span class="sep">/</span><span>Logins, Usuarios y Roles</span>
+      </div>
+      <h1 data-aos="fade-up">Logins, Usuarios y Roles</h1>
+
+      <p>SQL Server gestiona la seguridad en dos niveles: <strong>servidor</strong> (logins) y <strong>base de datos</strong> (usuarios). Un login proporciona acceso a la instancia; un usuario mapea ese login a una base de datos específica y le otorga permisos dentro de ella.</p>
+
+      <h2>Logins (nivel servidor)</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Login con autenticación SQL
+CREATE LOGIN juan_perez WITH PASSWORD = 'Str0ng!Pass#';
+
+-- Login con autenticación Windows
+CREATE LOGIN [DOMINIO\jperez] FROM WINDOWS;
+
+-- Ver logins existentes
+SELECT name, type_desc FROM sys.sql_logins;</code></pre></div>
+
+      <h2>Usuarios (nivel base de datos)</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">USE MiBaseDeDatos;
+CREATE USER juan_perez FOR LOGIN juan_perez;
+CREATE USER [DOMINIO\jperez] FOR LOGIN [DOMINIO\jperez];</code></pre></div>
+
+      <h2>Roles — Fijos de Servidor</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Rol fijo servidor</th><th>Permisos principales</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>sysadmin</code></td><td>Control total sobre la instancia</td></tr>
+            <tr><td><code>serveradmin</code></td><td>Configurar recursos del servidor</td></tr>
+            <tr><td><code>securityadmin</code></td><td>Administrar logins y permisos</td></tr>
+            <tr><td><code>dbcreator</code></td><td>Crear y modificar bases de datos</td></tr>
+            <tr><td><code>processadmin</code></td><td>Terminar procesos (KILL)</td></tr>
+            <tr><td><code>setupadmin</code></td><td>Administrar servidores vinculados</td></tr>
+            <tr><td><code>bulkadmin</code></td><td>Ejecutar BULK INSERT</td></tr>
+            <tr><td><code>diskadmin</code></td><td>Administrar archivos de disco</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">ALTER SERVER ROLE sysadmin ADD MEMBER juan_perez;
+ALTER SERVER ROLE dbcreator ADD MEMBER [DOMINIO\jperez];</code></pre></div>
+
+      <h2>Roles — Fijos de Base de Datos</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Rol fijo BD</th><th>Permisos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>db_owner</code></td><td>Control total sobre la BD</td></tr>
+            <tr><td><code>db_datareader</code></td><td>Leer todas las tablas</td></tr>
+            <tr><td><code>db_datawriter</code></td><td>Modificar todas las tablas</td></tr>
+            <tr><td><code>db_ddladmin</code></td><td>Ejecutar DDL (CREATE, ALTER, DROP)</td></tr>
+            <tr><td><code>db_securityadmin</code></td><td>Administrar roles y permisos en la BD</td></tr>
+            <tr><td><code>db_accessadmin</code></td><td>Administrar usuarios de BD</td></tr>
+            <tr><td><code>db_backupoperator</code></td><td>Realizar backups</td></tr>
+            <tr><td><code>db_denydatareader</code></td><td>Denegar lectura de datos</td></tr>
+            <tr><td><code>db_denydatawriter</code></td><td>Denegar escritura de datos</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">USE MiBaseDeDatos;
+ALTER ROLE db_datareader ADD MEMBER juan_perez;
+ALTER ROLE db_datawriter ADD MEMBER juan_perez;</code></pre></div>
+
+      <h2>Roles Personalizados</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">USE MiBaseDeDatos;
+CREATE ROLE consultor_ventas;
+GRANT SELECT ON schema::ventas TO consultor_ventas;
+ALTER ROLE consultor_ventas ADD MEMBER juan_perez;</code></pre></div>
+
+      <h2>Bases de Datos Contenidas</h2>
+      <p>Las bases de datos contenidas (containment) permiten autenticar usuarios directamente a nivel de BD sin un login en el servidor. Útil para migraciones y bases de datos autónomas.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">ALTER DATABASE MiBD SET CONTAINMENT = PARTIAL;
+USE MiBD;
+CREATE USER ana_suarez WITH PASSWORD = 'Pass#123';</code></pre></div>
+
+      <div class="callout callout-tip">
+        <div class="callout__title"><i class="bi bi-lightbulb"></i>Windows Auth vs SQL Auth</div>
+        <p>La autenticación de Windows (integrada) es más segura porque usa el protocolo Kerberos, políticas de contraseñas del dominio y no expone credenciales en la cadena de conexión. La autenticación SQL (login/password) es útil para aplicaciones externas o cuando no hay dominio. Prefiere Windows Auth siempre que sea posible.</p>
+      </div>
+
+      <div class="query-divider">/* --- Fin de Logins, Usuarios y Roles --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="/temas/nivel-6-transacciones/03-bloqueos-y-deadlocks.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Bloqueos y Deadlocks</div>
+        </a>
+        <a href="02-permisos-grant-deny-revoke.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Permisos GRANT, DENY, REVOKE</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

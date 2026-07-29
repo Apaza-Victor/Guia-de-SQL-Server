@@ -1,0 +1,85 @@
+/* ============================================
+   TOKENS DE DISEÑO — SQL Server: De Cero a Experto
+   ============================================ */
+
+:root {
+  /* Tipografía */
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-code: "JetBrains Mono", monospace;
+
+  --fs-h1: clamp(1.9rem, 1.3rem + 2.6vw, 3.2rem);
+  --fs-h2: clamp(1.45rem, 1.1rem + 1.5vw, 2.3rem);
+  --fs-h3: clamp(1.15rem, 1rem + 0.8vw, 1.6rem);
+  --fs-body: clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem);
+  --fs-small: clamp(0.8rem, 0.78rem + 0.1vw, 0.88rem);
+  --fs-code: clamp(0.82rem, 0.8rem + 0.15vw, 0.95rem);
+
+  /* Espaciado */
+  --space-xs: clamp(0.4rem, 0.35rem + 0.3vw, 0.6rem);
+  --space-sm: clamp(0.75rem, 0.65rem + 0.5vw, 1rem);
+  --space-md: clamp(1.25rem, 1rem + 1vw, 2rem);
+  --space-lg: clamp(2rem, 1.6rem + 1.8vw, 3.5rem);
+  --space-xl: clamp(3rem, 2.4rem + 2.8vw, 5.5rem);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --max-content: 880px;
+  --max-page: 1320px;
+
+  --navbar-height: 62px;
+
+  --transition-base: 0.25s ease;
+}
+
+/* ===== MODO OSCURO (por defecto) ===== */
+:root[data-theme="dark"] {
+  --bg-base: #0b1220;
+  --bg-surface: #121b2e;
+  --bg-surface-2: #1a2540;
+  --bg-code: #0d1526;
+
+  --accent-primary: #3ddc97;
+  --accent-primary-rgb: 61, 220, 151;
+  --accent-secondary: #5b8def;
+
+  --text-primary: #e7ecf5;
+  --text-muted: #8c99b3;
+  --text-on-accent: #06110c;
+
+  --border: #233152;
+  --border-soft: #1a2540;
+
+  --warning: #f4b740;
+  --danger: #ef5350;
+  --success: #3ddc97;
+
+  --shadow-elev: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* ===== MODO CLARO ===== */
+:root[data-theme="light"] {
+  --bg-base: #f7f9fc;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #eef2f8;
+  --bg-code: #0d1526;
+
+  --accent-primary: #0e9f6e;
+  --accent-primary-rgb: 14, 159, 110;
+  --accent-secondary: #2e63d9;
+
+  --text-primary: #111827;
+  --text-muted: #5b6472;
+  --text-on-accent: #ffffff;
+
+  --border: #dce3ee;
+  --border-soft: #eaeff6;
+
+  --warning: #b8790a;
+  --danger: #c62828;
+  --success: #0e9f6e;
+
+  --shadow-elev: 0 12px 32px rgba(20, 30, 60, 0.08);
+}

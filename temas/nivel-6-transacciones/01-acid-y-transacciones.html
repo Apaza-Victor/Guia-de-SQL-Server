@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Propiedades ACID, BEGIN TRAN, COMMIT, ROLLBACK, transacciones implícitas y explícitas, @@TRANCOUNT.">
+  <title>ACID y Transacciones · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 6 · Transacciones</a><span class="sep">/</span><span>ACID y Transacciones</span>
+      </div>
+      <h1 data-aos="fade-up">ACID y Transacciones</h1>
+
+      <p>Una transacción es una unidad lógica de trabajo que consta de una o más operaciones sobre la base de datos. SQL Server garantiza la integridad de las transacciones mediante las propiedades ACID.</p>
+
+      <h2>Propiedades ACID</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Propiedad</th><th>Significado</th><th>Implementación en SQL Server</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Atomicity</strong></td><td>Todo o nada: la transacción se completa completamente o no se aplica ningún cambio</td><td>COMMIT confirma; ROLLBACK deshace todas las operaciones</td></tr>
+            <tr><td><strong>Consistency</strong></td><td>La base de datos pasa de un estado válido a otro estado válido</td><td>Restricciones, reglas, triggers, integridad referencial</td></tr>
+            <tr><td><strong>Isolation</strong></td><td>Las transacciones concurrentes no interfieren entre sí</td><td>Niveles de aislamiento y bloqueos</td></tr>
+            <tr><td><strong>Durability</strong></td><td>Una vez confirmado, el cambio persiste ante fallos</td><td>Transaction Log (WAL — Write-Ahead Logging)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Transacciones Explícitas</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">BEGIN TRANSACTION;
+    UPDATE cuentas SET saldo = saldo - 100 WHERE id_cuenta = 1;
+    UPDATE cuentas SET saldo = saldo + 100 WHERE id_cuenta = 2;
+COMMIT TRANSACTION;
+-- Ambas operaciones se confirman juntas</code></pre></div>
+
+      <h2>ROLLBACK y Savepoints</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">BEGIN TRAN;
+    INSERT INTO log (mensaje) VALUES ('Paso 1');
+
+    SAVE TRANSACTION punto_control;
+
+    INSERT INTO log (mensaje) VALUES ('Paso 2');
+    -- Si algo falla, podemos revertir solo hasta el savepoint
+    ROLLBACK TRANSACTION punto_control;
+    -- 'Paso 2' se deshace, 'Paso 1' permanece
+
+COMMIT TRAN;</code></pre></div>
+
+      <h2>@@TRANCOUNT</h2>
+      <p>Esta función devuelve el nivel de anidamiento de transacciones actual. Cada <code>BEGIN TRAN</code> incrementa el contador; cada <code>COMMIT</code> lo decrementa. <code>ROLLBACK</code> lo lleva a 0.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">PRINT @@TRANCOUNT;  -- 0
+BEGIN TRAN;
+    PRINT @@TRANCOUNT;  -- 1
+    BEGIN TRAN;
+        PRINT @@TRANCOUNT;  -- 2
+    COMMIT;
+    PRINT @@TRANCOUNT;  -- 1
+COMMIT;
+PRINT @@TRANCOUNT;  -- 0</code></pre></div>
+
+      <h2>Transacciones Implícitas</h2>
+      <p>Cuando <code>SET IMPLICIT_TRANSACTIONS ON</code>, SQL Server inicia automáticamente una transacción para cada instrucción DDL/DML, pero requiere <code>COMMIT</code> o <code>ROLLBACK</code> explícito.</p>
+
+      <div class="callout callout-warning">
+        <div class="callout__title"><i class="bi bi-exclamation-triangle"></i>Transacciones abiertas</div>
+        <p>Siempre verifica que no haya transacciones abiertas sin confirmar (<code>ROLLBACK</code> o <code>COMMIT</code>). Una transacción abierta mantiene bloqueos y puede causar deadlocks o crecimiento excesivo del log de transacciones. Usa <code>DBCC OPENTRAN</code> para identificar transacciones huérfanas.</p>
+      </div>
+
+      <div class="query-divider">/* --- Fin de ACID y Transacciones --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="/temas/nivel-5-tsql-programacion/06-manejo-de-errores-try-catch.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Manejo de Errores TRY/CATCH</div>
+        </a>
+        <a href="02-niveles-de-aislamiento.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Niveles de Aislamiento</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ORM para SQL Server: Entity Framework, Sequelize, SQLAlchemy, Hibernate. Connection strings para entornos locales, servidor y Azure.">
+  <title>ORM y Connection Strings · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 10 · Integración Backend</a><span class="sep">/</span><span>ORM y Connection Strings</span>
+      </div>
+      <h1 data-aos="fade-up">ORM y Connection Strings</h1>
+
+      <p>Los ORMs (Object-Relational Mappers) facilitan el trabajo con bases de datos al abstraer las consultas SQL en código del lenguaje. Cada ecosistema tiene su ORM preferido para SQL Server.</p>
+
+      <div class="callout callout-warning"><div class="callout__title"><i class="bi bi-exclamation-circle"></i>Almacenamiento seguro</div><p>Nunca hardcodees connection strings en el código fuente. Usa variables de entorno, archivos .env, Azure Key Vault, o el administrador de secretos de tu plataforma (User Secrets en .NET, dotenv en Node.js, python-dotenv en Python).</p></div>
+
+      <h2>ORM por Lenguaje</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Lenguaje</th><th>ORM</th><th>Paquete / NuGet</th><th>Soporte SQL Server</th></tr></thead>
+        <tbody>
+          <tr><td>.NET (C#)</td><td>Entity Framework Core</td><td><code>Microsoft.EntityFrameworkCore.SqlServer</code></td><td>Excelente, LINQ, migrations</td></tr>
+          <tr><td>Node.js</td><td>Sequelize</td><td><code>sequelize</code> + <code>tedious</code></td><td>Bueno, modelos, migraciones</td></tr>
+          <tr><td>Python</td><td>SQLAlchemy</td><td><code>sqlalchemy</code> + <code>pyodbc</code></td><td>Excelente, ORM + Core, Alembic</td></tr>
+          <tr><td>Java</td><td>Hibernate</td><td><code>org.hibernate.orm</code> + <code>mssql-jdbc</code></td><td>Excelente, JPA, HQL</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Connection Strings Comunes</h2>
+
+      <div class="code-block"><span class="code-block__lang">TEXTO</span><pre><code class="language-plaintext">======= LOCAL (Windows Authentication) =======
+Server=localhost;Database=MiBase;Integrated Security=True;TrustServerCertificate=True;
+
+======= LOCAL (SQL Server Auth) =======
+Server=localhost;Database=MiBase;User Id=sa;Password=MiPass123;TrustServerCertificate=True;
+
+======= SERVIDOR DEDICADO =======
+Server=192.168.1.100,1433;Database=MiBase;User Id=sa;Password=MiPass123;Encrypt=True;TrustServerCertificate=True;
+
+======= AZURE SQL DATABASE =======
+Server=tcp:miservidor.database.windows.net,1433;Database=MiBase;User Id=admin@miservidor;Password=MiPass123;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+
+======= AZURE CON MANAGED IDENTITY =======
+Server=tcp:miservidor.database.windows.net,1433;Database=MiBase;Authentication=Active Directory Managed Identity;Encrypt=True;
+</code></pre></div>
+
+      <h2>Ejemplo: Entity Framework Core (C#)</h2>
+
+      <div class="code-block"><span class="code-block__lang">C#</span><pre><code class="language-csharp">// appsettings.json
+{
+  "ConnectionStrings": {
+    "Default": "Server=localhost;Database=MiBase;User Id=sa;Password=MiPass123;TrustServerCertificate=True;"
+  }
+}
+
+// DbContext
+public class AppDbContext : DbContext
+{
+    public DbSet&lt;Usuario&gt; Usuarios { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder ob)
+        => ob.UseSqlServer(connectionString);
+}
+</code></pre></div>
+
+      <h2>Ejemplo: Sequelize (Node.js)</h2>
+
+      <div class="code-block"><span class="code-block__lang">JavaScript</span><pre><code class="language-javascript">const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize('MiBase', 'sa', 'MiPass123', {
+    host: 'localhost',
+    dialect: 'mssql',
+    dialectOptions: {
+        options: { encrypt: true, trustServerCertificate: true }
+    },
+    pool: { max: 5, min: 0, idle: 10000 }
+});
+
+const Usuario = sequelize.define('Usuario', {
+    id: { type: DataTypes.INTEGER, primaryKey: true },
+    nombre: DataTypes.STRING,
+    email: DataTypes.STRING
+});
+</code></pre></div>
+
+      <h2>Ejemplo: SQLAlchemy (Python)</h2>
+
+      <div class="code-block"><span class="code-block__lang">Python</span><pre><code class="language-python">from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, Session
+
+conn_str = "mssql+pyodbc://sa:MiPass123@localhost:1433/MiBase?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=yes&TrustServerCertificate=yes"
+engine = create_engine(conn_str)
+
+Base = declarative_base()
+
+class Usuario(Base):
+    __tablename__ = 'Usuarios'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String)
+    email = Column(String)
+
+# Consulta
+with Session(engine) as session:
+    usuarios = session.query(Usuario).all()
+</code></pre></div>
+
+      <h2>Ejemplo: Hibernate (Java)</h2>
+
+      <div class="code-block"><span class="code-block__lang">Java</span><pre><code class="language-java">// application.properties
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=MiBase;encrypt=true;trustServerCertificate=true
+spring.datasource.username=sa
+spring.datasource.password=MiPass123
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+</code></pre></div>
+
+      <nav class="prev-next-nav">
+        <a href="04-conexion-con-dotnet-java.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Conexión con .NET y Java</div>
+        </a>
+        <a href="06-entornos-locales-laragon-xampp-docker.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Entornos Locales</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

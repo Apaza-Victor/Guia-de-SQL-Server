@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guía completa de SQL Server desde cero hasta nivel experto. Aprende T-SQL, diseño de bases de datos, integración con backend y más.">
+  <title>SQL Server · De Cero a Experto — Guía Completa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <!-- HERO with animated SQL console -->
+    <section class="hero-guide hero-fullscreen">
+      <div class="container-guide" data-aos="fade-up" style="display:flex;align-items:center;gap:clamp(2rem,4vw,4rem);">
+        <div style="flex:1;min-width:0;">
+          <span class="hero-eyebrow">>_ Consulta en ejecución</span>
+          <h1>SQL Server<br><span style="color:var(--accent-primary);">De Cero a Experto</span></h1>
+          <p class="hero-lead">Guía de teoría, referencia y práctica progresiva. Desde los fundamentos de bases de datos hasta integración con backend y temas avanzados de SQL Server.</p>
+          <div style="margin-top:var(--space-md);display:flex;flex-wrap:wrap;gap:0.75rem;">
+            <a href="/temas/nivel-1-fundamentos/01-que-es-una-base-de-datos.html" class="btn btn-lg" style="background:var(--accent-primary);color:var(--text-on-accent);border:none;border-radius:var(--radius-md);padding:0.6rem 1.5rem;font-weight:600;">Comenzar la guía →</a>
+            <a href="/recursos.html" class="btn btn-lg" style="border:1px solid var(--border);color:var(--text-primary);border-radius:var(--radius-md);padding:0.6rem 1.5rem;">Recursos externos</a>
+          </div>
+        </div>
+        <div style="flex-shrink:0;width:min(340px,38vw);" class="d-none d-md-block">
+          <div class="sql-console" style="font-size:clamp(0.65rem,0.6rem + 0.3vw,0.8rem);">
+            <div class="sql-console__bar" style="padding:0.4rem 0.7rem;">
+              <span class="sql-console__dot sql-console__dot--r"></span>
+              <span class="sql-console__dot sql-console__dot--y"></span>
+              <span class="sql-console__dot sql-console__dot--g"></span>
+              <span class="sql-console__title">query.sql</span>
+            </div>
+            <div class="sql-console__body" id="consoleBody">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="query-divider">/* --- CONSULTA EJECUTADA · 12 niveles · 46 temas --- */</div>
+
+    <!-- Why this guide -->
+    <section style="padding-block:var(--space-lg);">
+      <div class="container-guide container-content" data-aos="fade-up">
+        <h2>¿Por qué esta guía?</h2>
+        <p style="color:var(--text-muted);font-size:1.05rem;">SQL Server es uno de los motores de bases de datos más utilizados en el mundo empresarial. Esta guía está diseñada para llevarte desde cero hasta un nivel avanzado/experto, combinando teoría, ejemplos prácticos y buenas prácticas, todo en un solo recurso navegable y gratuito.</p>
+        <div class="row g-3 mt-3">
+          <div class="col-sm-6 col-lg-3">
+            <div class="concept-card">
+              <div class="concept-card__icon"><i class="bi bi-book"></i></div>
+              <h4>12 Niveles</h4>
+              <p>Progresión estructurada desde fundamentos hasta temas de experto.</p>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="concept-card">
+              <div class="concept-card__icon"><i class="bi bi-code-slash"></i></div>
+              <h4>Ejemplos Reales</h4>
+              <p>Código T-SQL funcional listo para probar en tu entorno local.</p>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="concept-card">
+              <div class="concept-card__icon"><i class="bi bi-diagram-3"></i></div>
+              <h4>Arquitectura</h4>
+              <p>Diagramas ER, flujos de transacciones y modelos de datos explicados.</p>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="concept-card">
+              <div class="concept-card__icon"><i class="bi bi-layers"></i></div>
+              <h4>Backend Real</h4>
+              <p>Conexión con PHP, Node.js, Python, .NET y Java explicada paso a paso.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="query-divider">/* --- SELECCIONA UN NIVEL PARA COMENZAR --- */</div>
+
+    <!-- Temario map -->
+    <section style="padding-block:var(--space-lg);">
+      <div class="container-guide" data-aos="fade-up">
+        <h2>Mapa del temario</h2>
+        <p style="color:var(--text-muted);">12 niveles con 46 temas que cubren todo lo que necesitas saber sobre SQL Server.</p>
+        
+        <div class="levels-grid mt-3">
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 01</div>
+            <h3>Fundamentos</h3>
+            <p>¿Qué es una BD? Instalación, SSMS, Azure Data Studio.</p>
+            <a href="/temas/nivel-1-fundamentos/01-que-es-una-base-de-datos.html" style="font-size:0.85rem;color:var(--accent-primary);">4 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 02</div>
+            <h3>SQL Básico</h3>
+            <p>DDL, DML, SELECT, tipos de datos, operadores.</p>
+            <a href="/temas/nivel-2-sql-basico/01-ddl-create-alter-drop.html" style="font-size:0.85rem;color:var(--accent-primary);">5 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 03</div>
+            <h3>Consultas Intermedias</h3>
+            <p>JOINs, subconsultas, GROUP BY, vistas, UNION.</p>
+            <a href="/temas/nivel-3-consultas-intermedias/01-joins.html" style="font-size:0.85rem;color:var(--accent-primary);">5 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 04</div>
+            <h3>Diseño de BD</h3>
+            <p>Modelado ER, normalización, claves, índices básicos.</p>
+            <a href="/temas/nivel-4-diseno-bd/01-modelado-entidad-relacion.html" style="font-size:0.85rem;color:var(--accent-primary);">4 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 05</div>
+            <h3>Programación T-SQL</h3>
+            <p>Variables, SP, funciones, triggers, cursores, errores.</p>
+            <a href="/temas/nivel-5-tsql-programacion/01-variables-y-control-de-flujo.html" style="font-size:0.85rem;color:var(--accent-primary);">6 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 06</div>
+            <h3>Transacciones</h3>
+            <p>ACID, niveles de aislamiento, bloqueos y deadlocks.</p>
+            <a href="/temas/nivel-6-transacciones/01-acid-y-transacciones.html" style="font-size:0.85rem;color:var(--accent-primary);">3 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 07</div>
+            <h3>Seguridad</h3>
+            <p>Logins, roles, permisos, encriptación básica.</p>
+            <a href="/temas/nivel-7-seguridad/01-logins-usuarios-roles.html" style="font-size:0.85rem;color:var(--accent-primary);">3 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 08</div>
+            <h3>Optimización</h3>
+            <p>Índices avanzados, planes de ejecución, query tuning.</p>
+            <a href="/temas/nivel-8-optimizacion/01-indices-avanzados.html" style="font-size:0.85rem;color:var(--accent-primary);">4 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 09</div>
+            <h3>Administración</h3>
+            <p>Backup, restore, mantenimiento, SQL Agent, replicación.</p>
+            <a href="/temas/nivel-9-administracion/01-backup-y-restore.html" style="font-size:0.85rem;color:var(--accent-primary);">4 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 10</div>
+            <h3>Integración Backend</h3>
+            <p>PHP, Node.js, Python, .NET, Java, ORMs, entornos locales.</p>
+            <a href="/temas/nivel-10-integracion-backend/01-conexion-con-php.html" style="font-size:0.85rem;color:var(--accent-primary);">6 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 11</div>
+            <h3>Avanzado / Experto</h3>
+            <p>CTEs, ventanas, JSON, particionamiento, OLTP, Always On.</p>
+            <a href="/temas/nivel-11-avanzado-experto/01-cte-recursivos.html" style="font-size:0.85rem;color:var(--accent-primary);">7 temas →</a>
+          </div>
+          <div class="level-card">
+            <div class="level-card__num">NIVEL 12</div>
+            <h3>Proyecto Final</h3>
+            <p>Buenas prácticas, checklist de experto, proyecto integrador.</p>
+            <a href="/temas/nivel-12-proyecto-final/01-buenas-practicas-generales.html" style="font-size:0.85rem;color:var(--accent-primary);">3 temas →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="query-divider">/* --- CÓMO USAR ESTA GUÍA --- */</div>
+
+    <!-- How to use -->
+    <section style="padding-block:var(--space-lg);">
+      <div class="container-guide container-content" data-aos="fade-up">
+        <h2>Cómo usar la guía</h2>
+        <div class="callout callout-tip">
+          <div class="callout__title"><i class="bi bi-lightbulb"></i> Lectura recomendada</div>
+          <p>La guía está diseñada para leerse de forma secuencial, pero cada tema también funciona como referencia independiente. Si ya tienes experiencia, puedes saltar al nivel que necesites.</p>
+        </div>
+        <ul style="color:var(--text-muted);">
+          <li><strong>Navega por niveles</strong> usando el menú superior o el grid del temario.</li>
+          <li><strong>Cada tema incluye</strong> explicación teórica, ejemplos de código T-SQL, tablas comparativas y notas importantes.</li>
+          <li><strong>Usa los botones</strong> "Anterior / Siguiente" al final de cada página para avanzar en orden.</li>
+          <li><strong>Alterna el tema</strong> oscuro/claro con el botón de sol/luna en la barra superior.</li>
+          <li><strong>Consulta</strong> la sección de <a href="/recursos.html">Recursos</a> para herramientas externas y el <a href="/glosario.html">Glosario</a> para términos técnicos.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script>
+  (function typewriter() {
+    var el = document.getElementById('consoleBody');
+    if (!el || el.offsetParent === null) return;
+
+    var lines = [
+      'SELECT conocimiento',
+      'FROM cero',
+      "WHERE nivel = 'experto'",
+      'ORDER BY practica DESC;'
+    ];
+    var sqlKw = ['SELECT','FROM','WHERE','ORDER','BY','DESC'];
+    var lineIdx = 0, charIdx = 0, completed = '';
+
+    function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function colorize(text) {
+      var parts = text.split(/(\s+)/);
+      var out = '';
+      for (var i = 0; i < parts.length; i++) {
+        var w = parts[i];
+        if (sqlKw.indexOf(w) !== -1) out += '<span style="color:#5B8DEF;">' + w + '</span>';
+        else if (w.charAt(0) === "'") out += '<span style="color:#3DDC97;">' + esc(w) + '</span>';
+        else out += esc(w);
+      }
+      return out;
+    }
+
+    function type() {
+      if (lineIdx >= lines.length) return;
+      var current = lines[lineIdx];
+      if (charIdx < current.length) {
+        charIdx++;
+        var typed = current.substring(0, charIdx);
+        el.innerHTML = completed + colorize(typed) + '<span class="sql-console__caret"></span>';
+        var ch = current[charIdx - 1];
+        var delay = ch === ' ' ? 60 : 30 + Math.random() * 40;
+        setTimeout(type, delay);
+      } else {
+        completed += (completed ? '<br>' : '') + colorize(current);
+        charIdx = 0;
+        lineIdx++;
+        el.innerHTML = completed + '<span class="sql-console__caret"></span>';
+        if (lineIdx < lines.length) setTimeout(type, 400);
+      }
+    }
+
+    setTimeout(type, 600);
+  })();
+  </script>
+</body>
+</html>

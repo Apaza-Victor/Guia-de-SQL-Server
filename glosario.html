@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Glosario de términos técnicos de SQL Server: definiciones claras de conceptos como ACID, DDL, DML, índices, transacciones y más.">
+  <title>Glosario · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><span>Glosario</span>
+      </div>
+      <h1 data-aos="fade-up">Glosario de términos SQL</h1>
+      <p style="color:var(--text-muted);max-width:60ch;" data-aos="fade-up">Definiciones concisas de los conceptos, comandos y acrónimos más importantes de SQL Server, ordenadas alfabéticamente.</p>
+
+      <!-- A-Z Index -->
+      <div class="glossary-index" data-aos="fade-up" style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-block:var(--space-md);">
+        <a href="#letra-a" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">A</a>
+        <a href="#letra-b" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">B</a>
+        <a href="#letra-c" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">C</a>
+        <a href="#letra-d" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">D</a>
+        <a href="#letra-f" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">F</a>
+        <a href="#letra-g" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">G</a>
+        <a href="#letra-i" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">I</a>
+        <a href="#letra-n" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">N</a>
+        <a href="#letra-p" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">P</a>
+        <a href="#letra-s" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">S</a>
+        <a href="#letra-t" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">T</a>
+        <a href="#letra-u" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">U</a>
+        <a href="#letra-v" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">V</a>
+        <a href="#letra-w" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--surface-2);border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.85rem;color:var(--accent-primary);">W</a>
+      </div>
+
+      <!-- A -->
+      <h2 id="letra-a" data-aos="fade-up">A</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-acid" data-aos="fade-up">
+          <div class="glossary-term__title">ACID</div>
+          <div class="glossary-term__def">Acrónimo de Atomicity, Consistency, Isolation, Durability. Conjunto de propiedades que garantizan que las transacciones en bases de datos se procesan de forma fiable y segura.</div>
+        </div>
+        <div class="glossary-term" id="term-alter" data-aos="fade-up">
+          <div class="glossary-term__title">ALTER</div>
+          <div class="glossary-term__def">Comando DDL utilizado para modificar la estructura de objetos existentes en la base de datos, como tablas, vistas o procedimientos almacenados.</div>
+        </div>
+      </div>
+
+      <!-- B -->
+      <h2 id="letra-b" data-aos="fade-up">B</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-base-de-datos" data-aos="fade-up">
+          <div class="glossary-term__title">Base de datos</div>
+          <div class="glossary-term__def">Colección organizada de datos estructurados que se almacenan y gestionan electrónicamente. SQL Server es un sistema gestor de bases de datos relacionales (RDBMS).</div>
+        </div>
+      </div>
+
+      <!-- C -->
+      <h2 id="letra-c" data-aos="fade-up">C</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-clave-foranea" data-aos="fade-up">
+          <div class="glossary-term__title">Clave foránea (FOREIGN KEY)</div>
+          <div class="glossary-term__def">Campo o conjunto de campos en una tabla que se relaciona con la clave primaria de otra tabla, estableciendo integridad referencial entre ambas.</div>
+        </div>
+        <div class="glossary-term" id="term-clave-primaria" data-aos="fade-up">
+          <div class="glossary-term__title">Clave primaria (PRIMARY KEY)</div>
+          <div class="glossary-term__def">Restricción que identifica de forma única cada fila de una tabla. No permite valores NULL y garantiza la unicidad de los registros.</div>
+        </div>
+        <div class="glossary-term" id="term-create" data-aos="fade-up">
+          <div class="glossary-term__title">CREATE</div>
+          <div class="glossary-term__def">Comando DDL utilizado para crear nuevos objetos en la base de datos, como bases de datos, tablas, índices, vistas y procedimientos almacenados.</div>
+        </div>
+        <div class="glossary-term" id="term-cte" data-aos="fade-up">
+          <div class="glossary-term__title">CTE (Common Table Expression)</div>
+          <div class="glossary-term__def">Expresión de tabla común que permite definir un conjunto de resultados temporal con nombre, útil para consultas recursivas y subconsultas complejas.</div>
+        </div>
+        <div class="glossary-term" id="term-cursor" data-aos="fade-up">
+          <div class="glossary-term__title">Cursor</div>
+          <div class="glossary-term__def">Mecanismo de T-SQL que permite recorrer fila por fila el resultado de una consulta. Se recomienda evitar su uso en favor de operaciones basadas en conjuntos.</div>
+        </div>
+      </div>
+
+      <!-- D -->
+      <h2 id="letra-d" data-aos="fade-up">D</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-dcl" data-aos="fade-up">
+          <div class="glossary-term__title">DCL (Data Control Language)</div>
+          <div class="glossary-term__def">Subconjunto de SQL que incluye comandos para gestionar permisos y control de acceso como GRANT, REVOKE y DENY.</div>
+        </div>
+        <div class="glossary-term" id="term-ddl" data-aos="fade-up">
+          <div class="glossary-term__title">DDL (Data Definition Language)</div>
+          <div class="glossary-term__def">Subconjunto de SQL que incluye comandos para definir y modificar la estructura de los objetos de la base de datos: CREATE, ALTER, DROP, TRUNCATE.</div>
+        </div>
+        <div class="glossary-term" id="term-dml" data-aos="fade-up">
+          <div class="glossary-term__title">DML (Data Manipulation Language)</div>
+          <div class="glossary-term__def">Subconjunto de SQL que incluye comandos para manipular datos: SELECT, INSERT, UPDATE, DELETE.</div>
+        </div>
+        <div class="glossary-term" id="term-dql" data-aos="fade-up">
+          <div class="glossary-term__title">DQL (Data Query Language)</div>
+          <div class="glossary-term__def">Subconjunto de SQL centrado exclusivamente en consultas de datos. El comando principal es SELECT. A menudo se considera parte de DML.</div>
+        </div>
+        <div class="glossary-term" id="term-drop" data-aos="fade-up">
+          <div class="glossary-term__title">DROP</div>
+          <div class="glossary-term__def">Comando DDL que elimina permanentemente un objeto de la base de datos (tabla, vista, índice, etc.). Esta operación no se puede deshacer.</div>
+        </div>
+      </div>
+
+      <!-- F -->
+      <h2 id="letra-f" data-aos="fade-up">F</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-foreign-key" data-aos="fade-up">
+          <div class="glossary-term__title">FOREIGN KEY</div>
+          <div class="glossary-term__def">Restricción que establece una relación entre dos tablas, garantizando que los valores de una columna coincidan con los valores de la clave primaria de otra tabla.</div>
+        </div>
+      </div>
+
+      <!-- G -->
+      <h2 id="letra-g" data-aos="fade-up">G</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-grant" data-aos="fade-up">
+          <div class="glossary-term__title">GRANT</div>
+          <div class="glossary-term__def">Comando DCL que otorga permisos específicos a usuarios o roles sobre objetos de la base de datos (SELECT, INSERT, EXECUTE, etc.).</div>
+        </div>
+        <div class="glossary-term" id="term-group-by" data-aos="fade-up">
+          <div class="glossary-term__title">GROUP BY</div>
+          <div class="glossary-term__def">Cláusula de SELECT que agrupa filas con valores idénticos en columnas especificadas, permitiendo aplicar funciones de agregación (COUNT, SUM, AVG, etc.).</div>
+        </div>
+      </div>
+
+      <!-- I -->
+      <h2 id="letra-i" data-aos="fade-up">I</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-index" data-aos="fade-up">
+          <div class="glossary-term__title">INDEX</div>
+          <div class="glossary-term__def">Estructura de datos que mejora la velocidad de las consultas al permitir búsquedas rápidas de filas. SQL Server usa índices agrupados (clustered) y no agrupados (nonclustered).</div>
+        </div>
+        <div class="glossary-term" id="term-inner-join" data-aos="fade-up">
+          <div class="glossary-term__title">INNER JOIN</div>
+          <div class="glossary-term__def">Tipo de JOIN que devuelve solo las filas que tienen valores coincidentes en ambas tablas. Es el tipo de combinación más común en SQL.</div>
+        </div>
+        <div class="glossary-term" id="term-insert" data-aos="fade-up">
+          <div class="glossary-term__title">INSERT</div>
+          <div class="glossary-term__def">Comando DML que agrega una o más filas nuevas a una tabla existente en la base de datos.</div>
+        </div>
+      </div>
+
+      <!-- N -->
+      <h2 id="letra-n" data-aos="fade-up">N</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-null" data-aos="fade-up">
+          <div class="glossary-term__title">NULL</div>
+          <div class="glossary-term__def">Valor especial en SQL que representa la ausencia de un dato o un valor desconocido. No es igual a cero ni a una cadena vacía. Las comparaciones con NULL requieren IS NULL o IS NOT NULL.</div>
+        </div>
+      </div>
+
+      <!-- P -->
+      <h2 id="letra-p" data-aos="fade-up">P</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-primary-key" data-aos="fade-up">
+          <div class="glossary-term__title">PRIMARY KEY</div>
+          <div class="glossary-term__def">Restricción que combina unicidad y no nulidad para identificar de forma exclusiva cada registro de una tabla. Cada tabla puede tener solo una clave primaria.</div>
+        </div>
+      </div>
+
+      <!-- S -->
+      <h2 id="letra-s" data-aos="fade-up">S</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-select" data-aos="fade-up">
+          <div class="glossary-term__title">SELECT</div>
+          <div class="glossary-term__def">Comando DML/DQL utilizado para recuperar datos de una o más tablas. Es la instrucción más usada en SQL y permite filtrar, ordenar y agrupar resultados.</div>
+        </div>
+        <div class="glossary-term" id="term-stored-procedure" data-aos="fade-up">
+          <div class="glossary-term__title">Stored Procedure</div>
+          <div class="glossary-term__def">Bloque de código T-SQL precompilado almacenado en el servidor que encapsula lógica de negocio. Puede aceptar parámetros y devolver resultados. Se ejecuta con EXEC.</div>
+        </div>
+      </div>
+
+      <!-- T -->
+      <h2 id="letra-t" data-aos="fade-up">T</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-trigger" data-aos="fade-up">
+          <div class="glossary-term__title">TRIGGER</div>
+          <div class="glossary-term__def">Tipo especial de procedimiento almacenado que se ejecuta automáticamente en respuesta a eventos como INSERT, UPDATE o DELETE sobre una tabla o vista.</div>
+        </div>
+        <div class="glossary-term" id="term-truncate" data-aos="fade-up">
+          <div class="glossary-term__title">TRUNCATE</div>
+          <div class="glossary-term__def">Comando DDL que elimina todas las filas de una tabla de forma rápida, liberando el espacio de almacenamiento. A diferencia de DELETE, no registra eliminaciones fila por fila en el log.</div>
+        </div>
+      </div>
+
+      <!-- U -->
+      <h2 id="letra-u" data-aos="fade-up">U</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-union" data-aos="fade-up">
+          <div class="glossary-term__title">UNION</div>
+          <div class="glossary-term__def">Operador que combina los resultados de dos o más consultas SELECT en un único conjunto de resultados, eliminando filas duplicadas por defecto. UNION ALL las conserva.</div>
+        </div>
+      </div>
+
+      <!-- V -->
+      <h2 id="letra-v" data-aos="fade-up">V</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-view" data-aos="fade-up">
+          <div class="glossary-term__title">VIEW (Vista)</div>
+          <div class="glossary-term__def">Tabla virtual basada en el resultado de una consulta SELECT almacenada. Las vistas simplifican consultas complejas y añaden una capa de seguridad sobre los datos subyacentes.</div>
+        </div>
+      </div>
+
+      <!-- W -->
+      <h2 id="letra-w" data-aos="fade-up">W</h2>
+      <div class="glossary-list">
+        <div class="glossary-term" id="term-where" data-aos="fade-up">
+          <div class="glossary-term__title">WHERE</div>
+          <div class="glossary-term__def">Cláusula de SELECT, UPDATE o DELETE que filtra filas basándose en una condición booleana. Solo las filas que cumplen la condición son incluidas en el resultado.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

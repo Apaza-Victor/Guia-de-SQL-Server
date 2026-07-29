@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Operadores LIKE, IN, BETWEEN, IS NULL y funciones de cadena, fecha y agregadas en SQL Server.">
+  <title>Operadores y funciones básicas · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 2 · SQL Básico</a><span class="sep">/</span><span>Operadores y funciones básicas</span>
+      </div>
+      <h1 data-aos="fade-up">Operadores y funciones básicas</h1>
+
+      <p>SQL Server ofrece una amplia gama de operadores y funciones para filtrar y transformar datos.</p>
+
+      <h2>Operadores de filtrado</h2>
+
+      <h3>LIKE</h3>
+      <p>Permite buscar patrones en cadenas de texto usando comodines.</p>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">-- % = cualquier secuencia de caracteres
+SELECT Name FROM Products WHERE Name LIKE 'L%';  -- Empieza con L
+SELECT Name FROM Products WHERE Name LIKE '%to'; -- Termina en "to"
+SELECT Name FROM Products WHERE Name LIKE '%ap%'; -- Contiene "ap"
+
+-- _ = un solo carácter
+SELECT Name FROM Products WHERE Name LIKE 'M__se'; -- "Mouse", 5 letras
+
+-- [ ] = rango o lista
+SELECT Name FROM Products WHERE Name LIKE '[A-M]%'; -- De la A a la M</code></pre>
+      </div>
+
+      <h3>IN, BETWEEN, IS NULL</h3>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">-- IN: múltiples valores
+SELECT Name, Category FROM Products
+WHERE Category IN ('Electrónica', 'Muebles');
+
+-- BETWEEN: rango inclusivo
+SELECT Name, Price FROM Products
+WHERE Price BETWEEN 50 AND 500;
+
+-- IS NULL: valores nulos
+SELECT Name FROM Products
+WHERE Description IS NULL;
+
+-- IS NOT NULL: valores no nulos
+SELECT Name FROM Products
+WHERE Description IS NOT NULL;</code></pre>
+      </div>
+
+      <h2>Funciones de cadena</h2>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">SELECT
+    UPPER('hola mundo') AS Mayusculas,
+    LOWER('HOLA MUNDO') AS Minusculas,
+    LEN('SQL Server') AS Longitud,
+    SUBSTRING('SQL Server', 1, 3) AS Subcadena,
+    TRIM('  texto  ') AS SinEspacios,
+    REPLACE('Hola Mundo', 'Mundo', 'SQL') AS Reemplazo,
+    CONCAT('SQL', ' ', 'Server') AS Concatenacion,
+    LEFT('SQL Server', 3) AS Izquierda,
+    RIGHT('SQL Server', 6) AS Derecha;</code></pre>
+      </div>
+
+      <h2>Funciones de fecha</h2>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">SELECT
+    GETDATE() AS FechaActual,
+    DATEADD(DAY, 30, GETDATE()) AS DentroDe30Dias,
+    DATEDIFF(DAY, '2024-01-01', GETDATE()) AS DiasDesdeEnero,
+    YEAR(GETDATE()) AS Anio,
+    MONTH(GETDATE()) AS Mes,
+    DAY(GETDATE()) AS Dia,
+    EOMONTH(GETDATE()) AS FinDeMes,
+    FORMAT(GETDATE(), 'dd/MM/yyyy') AS FechaFormateada;</code></pre>
+      </div>
+
+      <h2>Funciones agregadas (introducción)</h2>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">SELECT
+    COUNT(*) AS TotalProductos,
+    COUNT(DISTINCT Category) AS CategoriasUnicas,
+    SUM(Stock) AS StockTotal,
+    AVG(Price) AS PrecioPromedio,
+    MIN(Price) AS PrecioMinimo,
+    MAX(Price) AS PrecioMaximo
+FROM Products;</code></pre>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Categoría</th><th>Función</th><th>Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cadena</td><td><code>UPPER</code>, <code>LOWER</code></td><td>Convertir a mayúsculas/minúsculas</td></tr>
+            <tr><td>Cadena</td><td><code>LEN</code></td><td>Longitud de la cadena</td></tr>
+            <tr><td>Cadena</td><td><code>SUBSTRING</code></td><td>Extraer parte de una cadena</td></tr>
+            <tr><td>Cadena</td><td><code>TRIM</code>, <code>LTRIM</code>, <code>RTRIM</code></td><td>Eliminar espacios</td></tr>
+            <tr><td>Cadena</td><td><code>REPLACE</code></td><td>Reemplazar subcadenas</td></tr>
+            <tr><td>Cadena</td><td><code>CONCAT</code></td><td>Concatenar cadenas (NULL-safe)</td></tr>
+            <tr><td>Fecha</td><td><code>GETDATE</code></td><td>Fecha y hora actual del servidor</td></tr>
+            <tr><td>Fecha</td><td><code>DATEADD</code></td><td>Sumar intervalos a una fecha</td></tr>
+            <tr><td>Fecha</td><td><code>DATEDIFF</code></td><td>Diferencia entre dos fechas</td></tr>
+            <tr><td>Fecha</td><td><code>YEAR</code>, <code>MONTH</code>, <code>DAY</code></td><td>Extraer parte de una fecha</td></tr>
+            <tr><td>Agregada</td><td><code>COUNT</code></td><td>Contar filas</td></tr>
+            <tr><td>Agregada</td><td><code>SUM</code></td><td>Sumar valores numéricos</td></tr>
+            <tr><td>Agregada</td><td><code>AVG</code></td><td>Promedio de valores</td></tr>
+            <tr><td>Agregada</td><td><code>MIN</code>, <code>MAX</code></td><td>Valor mínimo/máximo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="query-divider">/* --- fin de operadores y funciones --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="04-tipos-de-datos.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Tipos de datos</div>
+        </a>
+        <a href="/temas/nivel-3-consultas-intermedias/01-joins.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">JOINs</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

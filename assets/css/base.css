@@ -1,0 +1,106 @@
+/* ============================================
+   BASE — reset ligero + tipografía global
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--fs-h1); margin-bottom: var(--space-md); }
+h2 { font-size: var(--fs-h2); margin-top: var(--space-lg); margin-bottom: var(--space-sm); }
+h3 { font-size: var(--fs-h3); margin-top: var(--space-md); margin-bottom: var(--space-xs); }
+
+p { margin-bottom: var(--space-sm); color: var(--text-primary); }
+
+a {
+  color: var(--accent-secondary);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+::selection {
+  background: rgba(var(--accent-primary-rgb), 0.35);
+}
+
+code, pre, kbd {
+  font-family: var(--font-code);
+}
+
+.text-muted-guide { color: var(--text-muted) !important; }
+
+.container-guide {
+  width: 100%;
+  max-width: var(--max-page);
+  margin-inline: auto;
+  padding-inline: var(--space-md);
+}
+
+.container-content {
+  max-width: var(--max-content);
+}
+
+/* Foco visible accesible en toda la web */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent-secondary);
+  outline-offset: 2px;
+}
+
+/* Respeta usuarios con preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Botón "volver arriba" */
+.btn-back-top {
+  position: fixed;
+  right: var(--space-sm);
+  bottom: calc(28px + var(--space-sm));
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  border: none;
+  box-shadow: var(--shadow-elev);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+  z-index: 1030;
+}
+.btn-back-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.btn-back-top:hover { transform: translateY(-3px); }

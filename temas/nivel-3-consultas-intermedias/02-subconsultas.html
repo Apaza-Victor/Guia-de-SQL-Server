@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Subconsultas en SQL Server: en WHERE, SELECT, FROM y correlacionadas. Ejemplos prácticos y rendimiento.">
+  <title>Subconsultas en SQL Server · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 3 · Consultas Intermedias</a><span class="sep">/</span><span>Subconsultas</span>
+      </div>
+      <h1 data-aos="fade-up">Subconsultas en SQL Server</h1>
+
+      <p>Una <strong>subconsulta</strong> es una consulta anidada dentro de otra consulta. Se usa para obtener datos intermedios que alimentan la consulta principal.</p>
+
+      <h2>Subconsultas en WHERE (IN, EXISTS, NOT EXISTS)</h2>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">-- Clientes que han realizado pedidos (IN)
+SELECT Name FROM Customers
+WHERE CustomerID IN (
+    SELECT DISTINCT CustomerID FROM Orders
+);
+
+-- Clientes sin pedidos (NOT IN)
+SELECT Name FROM Customers
+WHERE CustomerID NOT IN (
+    SELECT DISTINCT CustomerID FROM Orders
+    WHERE CustomerID IS NOT NULL
+);
+
+-- EXISTS (más eficiente que IN en tablas grandes)
+SELECT c.Name FROM Customers c
+WHERE EXISTS (
+    SELECT 1 FROM Orders o
+    WHERE o.CustomerID = c.CustomerID
+);
+
+-- NOT EXISTS
+SELECT c.Name FROM Customers c
+WHERE NOT EXISTS (
+    SELECT 1 FROM Orders o
+    WHERE o.CustomerID = c.CustomerID
+);</code></pre>
+      </div>
+
+      <h2>Subconsultas escalares en SELECT</h2>
+      <p>Devuelven un solo valor y se usan como columna calculada.</p>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">SELECT
+    c.Name,
+    c.City,
+    (SELECT COUNT(*) FROM Orders o WHERE o.CustomerID = c.CustomerID) AS TotalOrders,
+    (SELECT ISNULL(SUM(o.Amount), 0) FROM Orders o WHERE o.CustomerID = c.CustomerID) AS TotalAmount
+FROM Customers c;</code></pre>
+      </div>
+
+      <h2>Subconsultas en FROM (derived tables)</h2>
+      <p>La subconsulta actúa como una tabla virtual en el FROM.</p>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">SELECT dt.Category, dt.MaxPrice, p.Name
+FROM Products p
+INNER JOIN (
+    SELECT Category, MAX(Price) AS MaxPrice
+    FROM Products
+    GROUP BY Category
+) dt ON p.Category = dt.Category AND p.Price = dt.MaxPrice;</code></pre>
+      </div>
+
+      <h2>Subconsultas correlacionadas</h2>
+      <p>La subconsulta hace referencia a columnas de la consulta externa. Se evalúa una vez por cada fila externa.</p>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">-- Productos con precio mayor al promedio de su categoría
+SELECT p1.Name, p1.Category, p1.Price
+FROM Products p1
+WHERE p1.Price > (
+    SELECT AVG(p2.Price)
+    FROM Products p2
+    WHERE p2.Category = p1.Category
+);</code></pre>
+      </div>
+
+      <div class="callout callout-note">
+        <div class="callout__title"><i class="bi bi-info-circle"></i> Nota</div>
+        <p>Las subconsultas <strong>correlacionadas</strong> pueden ser lentas en tablas grandes porque se ejecutan una vez por cada fila externa. Considera usar <code>JOIN</code> o <code>Window Functions</code> como alternativas más eficientes en muchos casos.</p>
+      </div>
+
+      <div class="query-divider">/* --- fin de subconsultas --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="01-joins.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">JOINs</div>
+        </a>
+        <a href="03-funciones-agregadas-group-by.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Funciones agregadas y GROUP BY</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Entornos locales para SQL Server: Laragon, XAMPP con ODBC, Docker con docker-compose. Comparativa y configuración.">
+  <title>Entornos Locales · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 10 · Integración Backend</a><span class="sep">/</span><span>Entornos Locales</span>
+      </div>
+      <h1 data-aos="fade-up">Entornos Locales: Laragon, XAMPP, Docker</h1>
+
+      <p>Configurar SQL Server localmente para desarrollo puede hacerse de varias formas. Cada opción tiene ventajas según el stack y las necesidades del proyecto.</p>
+
+      <div class="callout callout-tip"><div class="callout__title"><i class="bi bi-lightbulb"></i>Docker para aislamiento</div><p>Usar Docker para SQL Server en desarrollo evita conflictos con otras instalaciones, permite cambiar de versión fácilmente y replica fielmente el entorno de producción.</p></div>
+
+      <h2>Comparativa de Entornos</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Entorno</th><th>Facilidad</th><th>SQL Server</th><th>Ideal para</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Laragon</strong></td><td>Muy fácil</td><td>Plugin (SQL Server Express)</td><td>PHP / Laravel en Windows</td></tr>
+          <tr><td><strong>XAMPP + ODBC</strong></td><td>Media</td><td>Externo vía ODBC</td><td>PHP / MySQL + SQL Server</td></tr>
+          <tr><td><strong>Docker</strong></td><td>Fácil (con docker-compose)</td><td>Contenedor oficial</td><td>Cualquier stack, multi-versión, CI/CD</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Laragon</h2>
+      <p>Laragon incluye un gestor de servicios que permite instalar SQL Server Express con un clic (versión 2019/2022). Provee aislamiento de proyectos con <code>.env</code> automático.</p>
+
+      <div class="code-block"><span class="code-block__lang">.env</span><pre><code class="language-env">DB_CONNECTION=sqlsrv
+DB_HOST=localhost
+DB_PORT=1433
+DB_DATABASE=MiBase
+DB_USERNAME=sa
+DB_PASSWORD=
+</code></pre></div>
+
+      <h2>Docker (recomendado)</h2>
+      <p>SQL Server en Docker funciona en Windows, macOS y Linux. El contenedor oficial de Microsoft es ligero y fácil de configurar.</p>
+
+      <div class="code-block"><span class="code-block__lang">YAML</span><pre><code class="language-yaml"># docker-compose.yml
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-dev
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "DevPassword123!"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:
+</code></pre></div>
+
+      <div class="code-block"><span class="code-block__lang">Bash</span><pre><code class="language-bash"># Iniciar contenedor
+docker-compose up -d
+
+# Conectarse desde SSMS o cualquier cliente
+# Servidor: localhost, 1433
+# Usuario: sa
+# Password: DevPassword123!
+
+# Ejecutar script SQL dentro del contenedor
+docker exec -it sqlserver-dev /opt/mssql-tools/bin/sqlcmd \
+    -S localhost -U sa -P DevPassword123! \
+    -d master -i /scripts/init.sql
+</code></pre></div>
+
+      <h2>XAMPP + ODBC</h2>
+      <p>XAMPP no incluye SQL Server nativamente, pero puedes conectarte desde PHP a un SQL Server existente (local o remoto) mediante el ODBC Driver de Microsoft.</p>
+
+      <ol>
+        <li>Descarga e instala <strong>ODBC Driver 18 for SQL Server</strong></li>
+        <li>Habilita la extensión <code>pdo_sqlsrv</code> o <code>sqlsrv</code> en <code>php.ini</code></li>
+        <li>Usa el DSN de conexión como se muestra en la lección de PHP</li>
+      </ol>
+
+      <h2>Variables de Entorno (.env)</h2>
+      <p>Gestiona las credenciales fuera del código usando archivos <code>.env</code>:</p>
+
+      <div class="code-block"><span class="code-block__lang">TEXTO</span><pre><code class="language-plaintext">DB_SERVER=localhost
+DB_PORT=1433
+DB_NAME=MiBase
+DB_USER=sa
+DB_PASS=DevPassword123!
+DB_ENCRYPT=true
+DB_TRUST_CERT=true
+</code></pre></div>
+
+      <p>Y cárgalas con la biblioteca correspondiente (<code>dotenv</code> en Node.js, <code>python-dotenv</code>, <code>vlucas/phpdotenv</code>, etc.).</p>
+
+      <nav class="prev-next-nav">
+        <a href="05-orm-y-connection-strings.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">ORM y Connection Strings</div>
+        </a>
+        <a href="/temas/nivel-11-avanzado-experto/01-cte-recursivos.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">CTE Recursivos</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

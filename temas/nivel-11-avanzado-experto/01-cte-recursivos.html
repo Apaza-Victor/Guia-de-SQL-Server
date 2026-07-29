@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CTE recursivos en SQL Server: sintaxis WITH, miembro ancla y recursivo, MAXRECURSION, ejemplos de jerarquías y rangos.">
+  <title>CTE Recursivos · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 11 · Avanzado / Experto</a><span class="sep">/</span><span>CTE Recursivos</span>
+      </div>
+      <h1 data-aos="fade-up">CTE Recursivos</h1>
+
+      <p>Un CTE (Common Table Expression) recursivo permite ejecutar consultas que se llaman a sí mismas, ideales para recorrer estructuras jerárquicas como organigramas, categorías o árboles.</p>
+
+      <div class="callout callout-warning"><div class="callout__title"><i class="bi bi-exclamation-circle"></i>Recursión infinita</div><p>Sin <code>OPTION (MAXRECURSION N)</code> el límite por defecto es 100. Si tu recursión excede ese número, SQL Server detiene la consulta con un error. Usa <code>MAXRECURSION 0</code> para ilimitado, pero con precaución.</p></div>
+
+      <h2>Sintaxis Básica</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">WITH cte_nombre (columnas)
+AS (
+    -- Miembro ancla: consulta inicial
+    SELECT ...
+    FROM ...
+    WHERE condicion_base
+
+    UNION ALL
+
+    -- Miembro recursivo: referencia al CTE
+    SELECT ...
+    FROM ... cte_nombre
+    JOIN ...
+    WHERE condicion_recursiva
+)
+SELECT * FROM cte_nombre;
+</code></pre></div>
+
+      <h2>Ejemplo 1: Jerarquía de Empleados</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Tabla: Employees (EmployeeID, Name, ManagerID)
+WITH EmployeeHierarchy AS (
+    -- Ancla: CEO (sin manager)
+    SELECT EmployeeID, Name, ManagerID, 0 AS Level,
+           CAST(Name AS VARCHAR(500)) AS Path
+    FROM Employees
+    WHERE ManagerID IS NULL
+
+    UNION ALL
+
+    -- Recursivo: subordinados
+    SELECT e.EmployeeID, e.Name, e.ManagerID,
+           eh.Level + 1,
+           CAST(eh.Path + ' -> ' + e.Name AS VARCHAR(500))
+    FROM Employees e
+    JOIN EmployeeHierarchy eh ON e.ManagerID = eh.EmployeeID
+)
+SELECT EmployeeID, Name, Level, Path
+FROM EmployeeHierarchy
+ORDER BY Path
+OPTION (MAXRECURSION 50);
+</code></pre></div>
+
+      <h2>Ejemplo 2: Generar Rango de Fechas</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">DECLARE @StartDate DATE = '2026-01-01';
+DECLARE @EndDate DATE = '2026-01-31';
+
+WITH DateRange AS (
+    SELECT @StartDate AS Fecha
+    UNION ALL
+    SELECT DATEADD(DAY, 1, Fecha)
+    FROM DateRange
+    WHERE Fecha &lt; @EndDate
+)
+SELECT Fecha,
+       DATENAME(WEEKDAY, Fecha) AS DiaSemana
+FROM DateRange
+OPTION (MAXRECURSION 365);
+</code></pre></div>
+
+      <h2>Ejemplo 3: Sucesión de Fibonacci</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">WITH Fibonacci (N, Fibonacci, Prev) AS (
+    SELECT 1, 0, 0
+    UNION ALL
+    SELECT 2, 1, 0
+    UNION ALL
+    SELECT N + 1,
+           Fibonacci + Prev,
+           Fibonacci
+    FROM Fibonacci
+    WHERE N &lt; 20
+)
+SELECT N, Fibonacci FROM Fibonacci
+WHERE N >= 1
+OPTION (MAXRECURSION 100);
+</code></pre></div>
+
+      <h2>Tabla de Casos de Uso</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Caso de Uso</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+        <tbody>
+          <tr><td>Organigramas</td><td>Jerarquía empleado-jefe</td><td>Recorrer subordinados</td></tr>
+          <tr><td>Categorías</td><td>Árbol de categorías (padre-hijo)</td><td>eCommerce, menús</td></tr>
+          <tr><td>Rangos de fechas</td><td>Generar series temporales</td><td>Calendarios, reportes</td></tr>
+          <tr><td>Despieces (BOM)</td><td>Bill of Materials</td><td>Componentes de un producto</td></tr>
+          <tr><td>Secuencias numéricas</td><td>Fibonacci, factorial, etc.</td><td>Demostraciones matemáticas</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="query-divider">/* --- Consejo: usa UNION ALL, no UNION --- */</div>
+      <p>En CTE recursivos usa siempre <code>UNION ALL</code> (no <code>UNION</code>), porque <code>UNION</code> intenta eliminar duplicados y eso rompe la recursión.</p>
+
+      <nav class="prev-next-nav">
+        <a href="/temas/nivel-10-integracion-backend/06-entornos-locales-laragon-xampp-docker.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Entornos Locales</div>
+        </a>
+        <a href="02-funciones-de-ventana.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Funciones de Ventana</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

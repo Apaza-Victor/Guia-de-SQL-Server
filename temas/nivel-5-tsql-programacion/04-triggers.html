@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Triggers AFTER e INSTEAD OF, tablas inserted/deleted, CREATE TRIGGER, auditoría, validación.">
+  <title>Triggers · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 5 · Programación T-SQL</a><span class="sep">/</span><span>Triggers</span>
+      </div>
+      <h1 data-aos="fade-up">Triggers</h1>
+
+      <p>Un trigger es un tipo especial de procedimiento almacenado que se ejecuta automáticamente en respuesta a eventos DML (INSERT, UPDATE, DELETE) sobre una tabla o vista. Son útiles para auditoría, validaciones complejas y mantener integridad referencial adicional.</p>
+
+      <h2>Tipos de Triggers</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Característica</th><th>AFTER (FOR)</th><th>INSTEAD OF</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Momento de ejecución</td><td>Después del evento DML</td><td>En lugar del evento DML</td></tr>
+            <tr><td>Tablas inserted/deleted</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td>Puede cancelar la operación</td><td>Con ROLLBACK</td><td>Sí, no ejecuta la operación original</td></tr>
+            <tr><td>Usado en vistas</td><td>No</td><td>Sí (para vistas no actualizables)</td></tr>
+            <tr><td>Integridad referencial</td><td>Post-evento</td><td>Reemplaza la operación</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Tablas <code>inserted</code> y <code>deleted</code></h2>
+      <p>SQL Server expone dos tablas lógicas dentro del trigger:</p>
+      <ul>
+        <li><strong>inserted:</strong> contiene las filas nuevas (INSERT) o los valores posteriores (UPDATE).</li>
+        <li><strong>deleted:</strong> contiene las filas eliminadas (DELETE) o los valores anteriores (UPDATE).</li>
+      </ul>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">CREATE TRIGGER trgAuditoriaProductos
+ON productos
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @Operacion VARCHAR(10);
+
+    IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+        SET @Operacion = 'UPDATE';
+    ELSE IF EXISTS (SELECT 1 FROM inserted)
+        SET @Operacion = 'INSERT';
+    ELSE
+        SET @Operacion = 'DELETE';
+
+    INSERT INTO auditoria_productos
+    (id_producto, nombre, precio_anterior, precio_nuevo, operacion, usuario, fecha)
+    SELECT
+        ISNULL(i.id_producto, d.id_producto),
+        ISNULL(i.nombre, d.nombre),
+        d.precio, i.precio,
+        @Operacion,
+        SYSTEM_USER,
+        GETDATE()
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.id_producto = d.id_producto;
+END;</code></pre></div>
+
+      <h2>Trigger INSTEAD OF</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">CREATE TRIGGER trgInsteadOfDelete
+ON clientes
+INSTEAD OF DELETE
+AS
+BEGIN
+    -- En lugar de eliminar, marca como inactivo
+    UPDATE clientes
+    SET activo = 0, fecha_baja = GETDATE()
+    FROM clientes c
+    INNER JOIN deleted d ON c.id_cliente = d.id_cliente;
+END;</code></pre></div>
+
+      <h2>Habilitar / Deshabilitar Triggers</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">DISABLE TRIGGER trgAuditoriaProductos ON productos;
+ENABLE TRIGGER trgAuditoriaProductos ON productos;</code></pre></div>
+
+      <div class="callout callout-danger">
+        <div class="callout__title"><i class="bi bi-lightning"></i>Recursión y efectos secundarios</div>
+        <p>Los triggers pueden provocar recursión (un trigger que modifica la misma tabla y se dispara a sí mismo) y efectos colaterales inesperados. Usa <code>RECURSIVE_TRIGGERS</code> con precaución y evita lógica compleja dentro de triggers. Los triggers también afectan el rendimiento de las operaciones DML porque se ejecutan dentro de la misma transacción.</p>
+      </div>
+
+      <div class="query-divider">/* --- Fin de Triggers --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="03-funciones-definidas-por-usuario.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Funciones Definidas por Usuario</div>
+        </a>
+        <a href="05-cursores.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Cursores</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

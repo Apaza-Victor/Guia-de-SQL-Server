@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bloqueos compartidos, exclusivos, actualización, intención, granularidad, deadlocks y estrategias.">
+  <title>Bloqueos y Deadlocks · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 6 · Transacciones</a><span class="sep">/</span><span>Bloqueos y Deadlocks</span>
+      </div>
+      <h1 data-aos="fade-up">Bloqueos y Deadlocks</h1>
+
+      <p>SQL Server usa bloqueos para garantizar la consistencia y el aislamiento entre transacciones concurrentes. Entender los tipos de bloqueo y cómo prevenir deadlocks es esencial para administrar bases de datos con alta concurrencia.</p>
+
+      <h2>Tipos de Bloqueo</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Bloqueo</th><th>Abrev.</th><th>Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Shared (Lectura)</td><td>S</td><td>Permite leer, pero no modificar. Varias transacciones pueden tenerlo simultáneamente</td></tr>
+            <tr><td>Exclusive (Escritura)</td><td>X</td><td>Permite leer y modificar. Solo una transacción lo posee. Nadie más puede leerlo ni modificarlo</td></tr>
+            <tr><td>Update</td><td>U</td><td>Fase previa a la escritura. Evita deadlocks entre lecturas que luego serán escrituras</td></tr>
+            <tr><td>Intent</td><td>IS, IX, SIX</td><td>Indica intención de adquirir bloqueo a nivel más fino (fila → página → tabla)</td></tr>
+            <tr><td>Schema</td><td>Sch-M, Sch-S</td><td>Protege definiciones de objetos (DDL) y consultas dependientes</td></tr>
+            <tr><td>Bulk Update</td><td>BU</td><td>Usado en operaciones bulk insert</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Granularidad de Bloqueos</h2>
+      <p>SQL Server puede bloquear a distintos niveles: fila (row), página (8 KB), extensión, tabla, partición o base de datos. El motor elige el nivel óptimo automáticamente según la cantidad de filas afectadas.</p>
+
+      <h2>Deadlocks</h2>
+      <p>Un deadlock ocurre cuando dos o más transacciones se bloquean mutuamente, cada una esperando que la otra libere un recurso. SQL Server detecta deadlocks automáticamente (mediante un hilo llamado deadlock monitor) y elige una víctima para terminar su transacción.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Generar un deadlock intencional
+
+-- Sesión 1
+BEGIN TRAN;
+    UPDATE productos SET precio = 100 WHERE id_producto = 1;
+    -- Ahora espera por Sesión 2...
+    UPDATE inventario SET stock = 50 WHERE id_producto = 1;
+COMMIT;
+
+-- Sesión 2
+BEGIN TRAN;
+    UPDATE inventario SET stock = 30 WHERE id_producto = 1;
+    -- Ahora espera por Sesión 1...
+    UPDATE productos SET precio = 200 WHERE id_producto = 1;
+COMMIT;</code></pre></div>
+
+      <p>SQL Server terminará una de las transacciones con error 1205 y deshará sus cambios. La aplicación debe reintentar la transacción fallida.</p>
+
+      <h2>Minimizando Deadlocks</h2>
+      <ul>
+        <li>Acceder a los recursos siempre en el <strong>mismo orden</strong> lógico.</li>
+        <li>Mantener las transacciones lo más <strong>cortas</strong> posible.</li>
+        <li>Usar índices adecuados para reducir la cantidad de bloqueos de fila/página.</li>
+        <li>Considerar el nivel de aislamiento <strong>READ COMMITTED SNAPSHOT</strong> para evitar bloqueos de lectura.</li>
+        <li>Dividir transacciones largas en lotes más pequeños.</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <div class="callout__title"><i class="bi bi-exclamation-triangle"></i>Reintentar tras deadlock</div>
+        <p>Las aplicaciones deben capturar el error 1205 (deadlock victim) y <strong>reintentar la transacción</strong>. No asumas que un deadlock es una condición fatal; es un comportamiento esperado en sistemas con alta concurrencia. Implementa un bucle de reintento con un límite máximo (ej. 3-5 intentos) y un retardo exponencial.</p>
+      </div>
+
+      <h2>Monitorear Bloqueos</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Ver bloqueos actuales
+SELECT * FROM sys.dm_tran_locks;
+
+-- Ver sesiones bloqueadas
+SELECT session_id, blocking_session_id, wait_type, wait_time
+FROM sys.dm_exec_requests
+WHERE blocking_session_id &gt; 0;</code></pre></div>
+
+      <div class="query-divider">/* --- Fin de Bloqueos y Deadlocks --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="02-niveles-de-aislamiento.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Niveles de Aislamiento</div>
+        </a>
+        <a href="/temas/nivel-7-seguridad/01-logins-usuarios-roles.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Nivel 7: Logins, Usuarios y Roles</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

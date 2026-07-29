@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dynamic SQL en SQL Server: sp_executesql, EXEC(), parámetros, QUOTENAME, riesgos de SQL injection y buenas prácticas.">
+  <title>Dynamic SQL · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 11 · Avanzado / Experto</a><span class="sep">/</span><span>Dynamic SQL</span>
+      </div>
+      <h1 data-aos="fade-up">Dynamic SQL</h1>
+
+      <p>Dynamic SQL consiste en construir y ejecutar sentencias SQL dinámicamente en tiempo de ejecución. Es útil cuando la estructura de la consulta no se conoce hasta la ejecución, como nombres de tabla variables o condiciones generadas por el usuario.</p>
+
+      <div class="callout callout-danger"><div class="callout__title"><i class="bi bi-exclamation-triangle"></i>SQL Injection</div><p>El mayor riesgo de Dynamic SQL es la inyección SQL. Nunca concatenes valores directamente. Usa siempre parámetros (<code>sp_executesql</code>) y <code>QUOTENAME()</code> para nombres de objetos.</p></div>
+
+      <h2>sp_executesql vs EXEC()</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Característica</th><th>sp_executesql</th><th>EXEC()</th></tr></thead>
+        <tbody>
+          <tr><td>Parametrización</td><td>Sí (con parámetros tipados)</td><td>No (solo concatenación)</td></tr>
+          <tr><td>Plan cache</td><td>Reutiliza planes (mismo template)</td><td>No reutiliza (cada ejecución es única)</td></tr>
+          <tr><td>Protección SQL Injection</td><td>Alta (con parámetros)</td><td>Nula (concatenación)</td></tr>
+          <tr><td>Legibilidad</td><td>Buena</td><td>Simple para scripts pequeños</td></tr>
+          <tr><td>Recomendado</td><td><strong>Siempre que sea posible</strong></td><td>Solo para scripts ad-hoc</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Ejemplo: sp_executesql con Parámetros</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">DECLARE @sql NVARCHAR(MAX);
+DECLARE @paramDef NVARCHAR(MAX);
+DECLARE @status INT = 1;
+DECLARE @minTotal DECIMAL(10,2) = 1000;
+
+SET @sql = N'
+    SELECT OrderID, CustomerName, Total
+    FROM Orders
+    WHERE Status = @Status
+      AND Total >= @MinTotal
+    ORDER BY Total DESC;
+';
+
+SET @paramDef = N'@Status INT, @MinTotal DECIMAL(10,2)';
+
+EXEC sp_executesql @sql,
+    @paramDef,
+    @Status = @status,
+    @MinTotal = @minTotal;
+</code></pre></div>
+
+      <h2>QUOTENAME para Nombres de Objetos</h2>
+      <p>Cuando necesitas usar nombres de tablas o columnas dinámicamente, <code>QUOTENAME()</code> los envuelve entre corchetes de forma segura.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">DECLARE @tabla NVARCHAR(128) = 'Orders';
+DECLARE @sql NVARCHAR(MAX);
+
+-- SEGURO: QUOTENAME evita inyección
+SET @sql = N'SELECT * FROM ' + QUOTENAME(@tabla);
+
+-- INSEGURO: concatenación directa
+-- SET @sql = N'SELECT * FROM ' + @tabla;  -- !!! PELIGRO
+
+EXEC sp_executesql @sql;
+</code></pre></div>
+
+      <h2>Ejemplo: Búsqueda Dinámica Segura</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">CREATE PROCEDURE dbo.BuscarProductos
+    @Nombre     NVARCHAR(100) = NULL,
+    @Categoria  INT           = NULL,
+    @PrecioMin  DECIMAL(10,2) = NULL,
+    @PrecioMax  DECIMAL(10,2) = NULL
+AS
+BEGIN
+    DECLARE @sql NVARCHAR(MAX) = N'
+        SELECT ProductID, Name, Price, CategoryID
+        FROM Products
+        WHERE 1=1';
+
+    DECLARE @params NVARCHAR(MAX) = N'
+        @Nombre    NVARCHAR(100),
+        @Categoria INT,
+        @PrecioMin DECIMAL(10,2),
+        @PrecioMax DECIMAL(10,2)';
+
+    IF @Nombre IS NOT NULL
+        SET @sql += N' AND Name LIKE ''%'' + @Nombre + ''%''';
+
+    IF @Categoria IS NOT NULL
+        SET @sql += N' AND CategoryID = @Categoria';
+
+    IF @PrecioMin IS NOT NULL
+        SET @sql += N' AND Price >= @PrecioMin';
+
+    IF @PrecioMax IS NOT NULL
+        SET @sql += N' AND Price <= @PrecioMax';
+
+    EXEC sp_executesql @sql, @params,
+        @Nombre, @Categoria, @PrecioMin, @PrecioMax;
+END;
+</code></pre></div>
+
+      <h2>Cuándo usar Dynamic SQL</h2>
+      <ul>
+        <li>Búsquedas con filtros opcionales (search builders)</li>
+        <li>Nombres de tabla/columna dinámicos (p. ej. tablas por año)</li>
+        <li>Generación dinámica de PIVOT / UNPIVOT</li>
+        <li>Scripts de administración que recorren bases de datos</li>
+      </ul>
+
+      <div class="query-divider">/* --- Prefiere siempre SQL estático --- */</div>
+      <p>Si puedes escribir una consulta fija sin Dynamic SQL, hazlo. El Dynamic SQL solo debe usarse cuando no hay alternativa.</p>
+
+      <nav class="prev-next-nav">
+        <a href="05-in-memory-oltp.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">In-Memory OLTP</div>
+        </a>
+        <a href="07-always-on-alta-disponibilidad.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Always On · Alta Disponibilidad</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guía de instalación de SQL Server Developer y Express: requisitos, descarga, pasos y herramientas incluidas.">
+  <title>Instalación de SQL Server · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 1 · Fundamentos</a><span class="sep">/</span><span>Instalación de SQL Server</span>
+      </div>
+      <h1 data-aos="fade-up">Instalación de SQL Server</h1>
+
+      <p>Antes de comenzar a trabajar con SQL Server, es necesario instalarlo en tu equipo. Microsoft ofrece varias ediciones, siendo las más comunes para aprendizaje <strong>Developer</strong> (gratuita, con todas las características) y <strong>Express</strong> (gratuita, limitada).</p>
+
+      <h2>Requisitos del sistema</h2>
+      <ul>
+        <li>Sistema operativo: Windows 10/11 (64 bits) o Windows Server 2019+</li>
+        <li>Procesador: 1.4 GHz o superior (64 bits)</li>
+        <li>RAM: Mínimo 1 GB (512 MB para Express)</li>
+        <li>Disco: 6 GB de espacio libre</li>
+        <li>.NET Framework 4.7.2 o superior</li>
+      </ul>
+
+      <h2>Descarga</h2>
+      <p>Puedes descargar SQL Server desde el sitio oficial de Microsoft. La edición <strong>Developer</strong> es la recomendada para aprendizaje, ya que incluye todas las funcionalidades de la edición Enterprise sin costo.</p>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Característica</th><th>Developer</th><th>Express</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Costo</td><td>Gratuito</td><td>Gratuito</td></tr>
+            <tr><td>Límite de BD</td><td>Ilimitado</td><td>10 GB por BD</td></tr>
+            <tr><td>RAM usada</td><td>Ilimitada</td><td>1 GB máximo</td></tr>
+            <tr><td>CPU</td><td>Todos los núcleos</td><td>1 socket / 4 núcleos</td></tr>
+            <tr><td>SQL Agent</td><td>Sí</td><td>No</td></tr>
+            <tr><td>Uso en producción</td><td>No permitido</td><td>Permitido</td></tr>
+            <tr><td>Ideal para</td><td>Aprendizaje y desarrollo</td><td>Aplicaciones pequeñas</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout__title"><i class="bi bi-lightbulb"></i> Tip</div>
+        <p>Para aprender SQL Server, elige la edición <strong>Developer</strong>. Es completamente gratuita y no tiene limitaciones de características. Solo no puede usarse en producción.</p>
+      </div>
+
+      <h2>Pasos de instalación</h2>
+      <ol>
+        <li><strong>Ejecutar el instalador</strong> — haz doble clic en <code>SQL2022-SSEI-Dev.exe</code> (o similar).</li>
+        <li><strong>Elegir tipo de instalación</strong> — selecciona "Básica" para una instalación rápida o "Personalizada" para elegir componentes.</li>
+        <li><strong>Aceptar términos</strong> — acepta la licencia y espera a que se descarguen los archivos.</li>
+        <li><strong>Seleccionar características</strong> — marca al menos <em>Database Engine Services</em>.</li>
+        <li><strong>Configurar instancia</strong> — usa el nombre predeterminado <code>MSSQLSERVER</code> o asigna uno personalizado.</li>
+        <li><strong>Autenticación</strong> — elige "Modo mixto" (Windows + SQL Server) y establece una contraseña para <code>sa</code>.</li>
+        <li><strong>Instalar</strong> — haz clic en "Instalar" y espera a que finalice el proceso.</li>
+      </ol>
+
+      <h2>Herramientas incluidas</h2>
+      <ul>
+        <li><strong>SQL Server Management Studio (SSMS)</strong> — herramienta gráfica para administrar SQL Server.</li>
+        <li><strong>SQL Server Configuration Manager</strong> — administra servicios y configuraciones de red.</li>
+        <li><strong>Azure Data Studio</strong> — editor multiplataforma moderno (se descarga por separado).</li>
+        <li><strong>SQL Server Agent</strong> — programación de tareas automatizadas.</li>
+      </ul>
+
+      <h2>Verificar la instalación</h2>
+      <p>Para confirmar que SQL Server está funcionando correctamente:</p>
+
+      <div class="code-block">
+        <span class="code-block__lang">T-SQL</span>
+        <pre><code class="language-sql">SELECT @@VERSION AS [Versión];
+GO</code></pre>
+      </div>
+
+      <div class="callout callout-note">
+        <div class="callout__title"><i class="bi bi-info-circle"></i> Nota</div>
+        <p>Si ves un mensaje de error al conectarte, verifica que el servicio "SQL Server (MSSQLSERVER)" esté en ejecución. Puedes revisarlo desde <em>Services</em> (services.msc) o desde SQL Server Configuration Manager.</p>
+      </div>
+
+      <nav class="prev-next-nav">
+        <a href="01-que-es-una-base-de-datos.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">¿Qué es una base de datos?</div>
+        </a>
+        <a href="03-ssms-azure-data-studio.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">SSMS y Azure Data Studio</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

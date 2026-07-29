@@ -1,0 +1,233 @@
+
+<nav class="navbar navbar-expand-lg site-navbar" id="mainNav">
+  <div class="container-fluid container-guide">
+    <a class="navbar-brand brand-guide" href="/index.html">
+      <span class="brand-dot">◆</span> SQL Server · Guía
+    </a>
+
+    <button class="navbar-toggler border-0 p-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-label="Abrir menú">
+      <i class="bi bi-list" style="font-size:1.5rem;color:var(--text-primary);"></i>
+    </button>
+
+    <div class="collapse navbar-collapse d-none d-lg-flex" id="desktopNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-link-guide dropdown-toggle" data-bs-toggle="dropdown">Niveles</a>
+          <ul class="dropdown-menu dropdown-menu-guide">
+            <li><a class="dropdown-item" href="/temas/nivel-1-fundamentos/01-que-es-una-base-de-datos.html">Nivel 1 · Fundamentos</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-2-sql-basico/01-ddl-create-alter-drop.html">Nivel 2 · SQL Básico</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-3-consultas-intermedias/01-joins.html">Nivel 3 · Consultas Intermedias</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-4-diseno-bd/01-modelado-entidad-relacion.html">Nivel 4 · Diseño BD</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-5-tsql-programacion/01-variables-y-control-de-flujo.html">Nivel 5 · Programación T-SQL</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-6-transacciones/01-acid-y-transacciones.html">Nivel 6 · Transacciones</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-7-seguridad/01-logins-usuarios-roles.html">Nivel 7 · Seguridad</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-8-optimizacion/01-indices-avanzados.html">Nivel 8 · Optimización</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-9-administracion/01-backup-y-restore.html">Nivel 9 · Administración</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-10-integracion-backend/01-conexion-con-php.html">Nivel 10 · Integración Backend</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-11-avanzado-experto/01-cte-recursivos.html">Nivel 11 · Avanzado/Experto</a></li>
+            <li><a class="dropdown-item" href="/temas/nivel-12-proyecto-final/01-buenas-practicas-generales.html">Nivel 12 · Proyecto Final</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link nav-link-guide" href="/recursos.html">Recursos</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-guide" href="/glosario.html">Glosario</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-guide" href="/acerca.html">Acerca</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2 ms-3">
+        <button class="btn btn-icon-header js-search-toggle" aria-label="Buscar">
+          <i class="bi bi-search"></i>
+        </button>
+        <button class="btn theme-toggle js-theme-toggle" aria-label="Cambiar tema">
+          <i class="bi bi-sun theme-toggle-icon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="offcanvas offcanvas-end offcanvas-guide" tabindex="-1" id="mobileMenu">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Menú</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="d-flex gap-2 mb-3">
+      <button class="btn btn-icon-header flex-grow-1 js-search-toggle" aria-label="Buscar" data-bs-dismiss="offcanvas">
+        <i class="bi bi-search"></i> Buscar
+      </button>
+      <button class="btn theme-toggle flex-grow-1 js-theme-toggle" aria-label="Cambiar tema" data-bs-dismiss="offcanvas">
+        <i class="bi bi-sun theme-toggle-icon"></i> Tema
+      </button>
+    </div>
+    <div class="accordion" id="mobileAccordion">
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN1">Nivel 1 · Fundamentos</button></h2>
+        <div id="mN1" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-1-fundamentos/01-que-es-una-base-de-datos.html">¿Qué es una base de datos?</a>
+            <a href="/temas/nivel-1-fundamentos/02-instalacion-sql-server.html">Instalación de SQL Server</a>
+            <a href="/temas/nivel-1-fundamentos/03-ssms-azure-data-studio.html">SSMS y Azure Data Studio</a>
+            <a href="/temas/nivel-1-fundamentos/04-tipos-de-bases-de-datos.html">Tipos de bases de datos</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN2">Nivel 2 · SQL Básico</button></h2>
+        <div id="mN2" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-2-sql-basico/01-ddl-create-alter-drop.html">DDL: CREATE, ALTER, DROP</a>
+            <a href="/temas/nivel-2-sql-basico/02-dml-insert-update-delete.html">DML: INSERT, UPDATE, DELETE</a>
+            <a href="/temas/nivel-2-sql-basico/03-select-where-orderby.html">SELECT, WHERE, ORDER BY</a>
+            <a href="/temas/nivel-2-sql-basico/04-tipos-de-datos.html">Tipos de datos</a>
+            <a href="/temas/nivel-2-sql-basico/05-operadores-y-funciones-basicas.html">Operadores y funciones básicas</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN3">Nivel 3 · Consultas Intermedias</button></h2>
+        <div id="mN3" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-3-consultas-intermedias/01-joins.html">JOINs</a>
+            <a href="/temas/nivel-3-consultas-intermedias/02-subconsultas.html">Subconsultas</a>
+            <a href="/temas/nivel-3-consultas-intermedias/03-funciones-agregadas-group-by.html">Funciones agregadas y GROUP BY</a>
+            <a href="/temas/nivel-3-consultas-intermedias/04-vistas.html">Vistas</a>
+            <a href="/temas/nivel-3-consultas-intermedias/05-union-except-intersect.html">UNION, EXCEPT, INTERSECT</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN4">Nivel 4 · Diseño BD</button></h2>
+        <div id="mN4" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-4-diseno-bd/01-modelado-entidad-relacion.html">Modelado entidad-relación</a>
+            <a href="/temas/nivel-4-diseno-bd/02-normalizacion.html">Normalización</a>
+            <a href="/temas/nivel-4-diseno-bd/03-claves-y-relaciones.html">Claves y relaciones</a>
+            <a href="/temas/nivel-4-diseno-bd/04-indices-basicos.html">Índices básicos</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN5">Nivel 5 · Programación T-SQL</button></h2>
+        <div id="mN5" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-5-tsql-programacion/01-variables-y-control-de-flujo.html">Variables y control de flujo</a>
+            <a href="/temas/nivel-5-tsql-programacion/02-procedimientos-almacenados.html">Procedimientos almacenados</a>
+            <a href="/temas/nivel-5-tsql-programacion/03-funciones-definidas-por-usuario.html">Funciones definidas por usuario</a>
+            <a href="/temas/nivel-5-tsql-programacion/04-triggers.html">Triggers</a>
+            <a href="/temas/nivel-5-tsql-programacion/05-cursores.html">Cursores</a>
+            <a href="/temas/nivel-5-tsql-programacion/06-manejo-de-errores-try-catch.html">Manejo de errores</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN6">Nivel 6 · Transacciones</button></h2>
+        <div id="mN6" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-6-transacciones/01-acid-y-transacciones.html">ACID y transacciones</a>
+            <a href="/temas/nivel-6-transacciones/02-niveles-de-aislamiento.html">Niveles de aislamiento</a>
+            <a href="/temas/nivel-6-transacciones/03-bloqueos-y-deadlocks.html">Bloqueos y deadlocks</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN7">Nivel 7 · Seguridad</button></h2>
+        <div id="mN7" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-7-seguridad/01-logins-usuarios-roles.html">Logins, usuarios y roles</a>
+            <a href="/temas/nivel-7-seguridad/02-permisos-grant-deny-revoke.html">Permisos GRANT, DENY, REVOKE</a>
+            <a href="/temas/nivel-7-seguridad/03-encriptacion-basica.html">Encriptación básica</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN8">Nivel 8 · Optimización</button></h2>
+        <div id="mN8" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-8-optimizacion/01-indices-avanzados.html">Índices avanzados</a>
+            <a href="/temas/nivel-8-optimizacion/02-planes-de-ejecucion.html">Planes de ejecución</a>
+            <a href="/temas/nivel-8-optimizacion/03-estadisticas-y-query-tuning.html">Estadísticas y query tuning</a>
+            <a href="/temas/nivel-8-optimizacion/04-buenas-practicas-de-rendimiento.html">Buenas prácticas de rendimiento</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN9">Nivel 9 · Administración</button></h2>
+        <div id="mN9" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-9-administracion/01-backup-y-restore.html">Backup y restore</a>
+            <a href="/temas/nivel-9-administracion/02-mantenimiento-y-jobs.html">Mantenimiento y jobs</a>
+            <a href="/temas/nivel-9-administracion/03-sql-server-agent.html">SQL Server Agent</a>
+            <a href="/temas/nivel-9-administracion/04-replicacion-basica.html">Replicación básica</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN10">Nivel 10 · Integración Backend</button></h2>
+        <div id="mN10" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-10-integracion-backend/01-conexion-con-php.html">Conexión con PHP</a>
+            <a href="/temas/nivel-10-integracion-backend/02-conexion-con-nodejs.html">Conexión con Node.js</a>
+            <a href="/temas/nivel-10-integracion-backend/03-conexion-con-python.html">Conexión con Python</a>
+            <a href="/temas/nivel-10-integracion-backend/04-conexion-con-dotnet-java.html">Conexión con .NET y Java</a>
+            <a href="/temas/nivel-10-integracion-backend/05-orm-y-connection-strings.html">ORMs y connection strings</a>
+            <a href="/temas/nivel-10-integracion-backend/06-entornos-locales-laragon-xampp-docker.html">Entornos locales</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN11">Nivel 11 · Avanzado/Experto</button></h2>
+        <div id="mN11" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-11-avanzado-experto/01-cte-recursivos.html">CTEs recursivos</a>
+            <a href="/temas/nivel-11-avanzado-experto/02-funciones-de-ventana.html">Funciones de ventana</a>
+            <a href="/temas/nivel-11-avanzado-experto/03-json-en-sql-server.html">JSON en SQL Server</a>
+            <a href="/temas/nivel-11-avanzado-experto/04-particionamiento.html">Particionamiento</a>
+            <a href="/temas/nivel-11-avanzado-experto/05-in-memory-oltp.html">In-Memory OLTP</a>
+            <a href="/temas/nivel-11-avanzado-experto/06-dynamic-sql.html">SQL dinámico</a>
+            <a href="/temas/nivel-11-avanzado-experto/07-always-on-alta-disponibilidad.html">Always On</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#mN12">Nivel 12 · Proyecto Final</button></h2>
+        <div id="mN12" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+          <div class="accordion-body">
+            <a href="/temas/nivel-12-proyecto-final/01-buenas-practicas-generales.html">Buenas prácticas generales</a>
+            <a href="/temas/nivel-12-proyecto-final/02-checklist-de-experto.html">Checklist de experto</a>
+            <a href="/temas/nivel-12-proyecto-final/03-proyecto-integrador.html">Proyecto integrador</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="my-3" style="border-color:var(--border);">
+    <a href="/recursos.html" class="btn btn-outline-light w-100 mb-2">Recursos externos</a>
+    <a href="/glosario.html" class="btn btn-outline-light w-100 mb-2">Glosario</a>
+    <a href="/acerca.html" class="btn btn-outline-light w-100">Acerca de</a>
+  </div>
+</div>
+
+<div class="search-modal-overlay" id="searchModal">
+  <div class="search-modal">
+    <div class="search-modal__header">
+      <i class="bi bi-search"></i>
+      <input type="text" class="search-modal__input" id="searchInput" placeholder="Buscar temas, conceptos, comandos..." autocomplete="off">
+      <button class="search-modal__close" id="searchClose" aria-label="Cerrar búsqueda"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="search-modal__results" id="searchResults">
+      <div class="search-modal__empty">Escribe para buscar en la guía...</div>
+    </div>
+  </div>
+</div>

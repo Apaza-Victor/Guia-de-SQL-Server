@@ -1,0 +1,85 @@
+/* ============================================
+   RESPONSIVE — media queries 368px → 1440px+
+   ============================================ */
+
+/* xs: 368px–575px (base) */
+@media (max-width: 575px) {
+  .hero-guide h1 { font-size: var(--fs-h1); }
+  .hero-lead { font-size: 0.95rem; }
+  .levels-grid { grid-template-columns: 1fr; }
+  .sql-console__body { font-size: 0.78rem; padding: var(--space-xs) var(--space-sm); }
+  .prev-next-nav { flex-direction: column; }
+  .prev-next-nav a { max-width: 100%; }
+  .concept-card { padding: var(--space-sm); }
+  .table-guide { font-size: 0.82rem; }
+  .table-guide th,
+  .table-guide td { padding: 0.4rem 0.5rem; }
+  .resource-card { flex-direction: column; }
+  .callout { padding: var(--space-xs) var(--space-sm); }
+  .breadcrumb-guide { font-size: 0.75rem; }
+  .btn-back-top { width: 38px; height: 38px; right: 0.5rem; bottom: 0.5rem; }
+}
+
+/* sm: 576px–767px */
+@media (min-width: 576px) {
+  .levels-grid { grid-template-columns: repeat(2, 1fr); }
+  .prev-next-nav { flex-direction: row; }
+  .resource-card { flex-direction: row; }
+}
+
+/* md: 768px–991px */
+@media (min-width: 768px) {
+  .levels-grid { grid-template-columns: repeat(2, 1fr); }
+  .container-content { padding-inline: var(--space-md); }
+}
+
+/* lg: 992px–1199px — sidebar TOC aparece */
+@media (min-width: 992px) {
+  .levels-grid { grid-template-columns: repeat(2, 1fr); }
+  .container-content { padding-inline: 0; }
+  .with-toc {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--space-lg);
+  }
+  .toc-sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+}
+
+/* xl: 1200px–1439px */
+@media (min-width: 1200px) {
+  .levels-grid { grid-template-columns: repeat(3, 1fr); }
+  .with-toc { grid-template-columns: 260px 1fr; }
+}
+
+/* xxl: 1440px+ */
+@media (min-width: 1440px) {
+  .levels-grid { grid-template-columns: repeat(3, 1fr); }
+  .with-toc { grid-template-columns: 280px 1fr; }
+}
+
+/* ---------- TABLES: scroll horizontal en móvil ---------- */
+.table-responsive-wrapper {
+  overflow-x: auto;
+  margin-bottom: var(--space-md);
+}
+.table-responsive-wrapper .table-guide { margin-bottom: 0; }
+
+/* ---------- IMPRESIÓN ---------- */
+@media print {
+  .site-navbar,
+  .site-footer,
+  .btn-back-top,
+  .prev-next-nav,
+  .toc-sidebar,
+  .btn-copy { display: none !important; }
+  body { background: #fff; color: #000; }
+  a { color: #000; text-decoration: underline; }
+  .code-block { border: 1px solid #ccc; break-inside: avoid; }
+  .callout { break-inside: avoid; }
+}

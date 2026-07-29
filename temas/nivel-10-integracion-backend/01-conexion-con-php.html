@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Conexión a SQL Server desde PHP con sqlsrv y PDO. Ejemplos de conexión, consultas preparadas y error handling.">
+  <title>Conexión con PHP · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 10 · Integración Backend</a><span class="sep">/</span><span>Conexión con PHP</span>
+      </div>
+      <h1 data-aos="fade-up">Conexión con PHP</h1>
+
+      <p>PHP puede conectarse a SQL Server mediante dos extensiones principales: <code>sqlsrv</code> (nativa de Microsoft para Windows) y <code>PDO</code> (interfaz portable que también funciona en Linux).</p>
+
+      <div class="callout callout-tip"><div class="callout__title"><i class="bi bi-lightbulb"></i>Usa PDO para portabilidad</div><p>Si tu aplicación necesita funcionar en Windows y Linux, elige PDO. Cambiar de motor de base de datos solo requiere modificar el DSN. sqlsrv solo está disponible en Windows.</p></div>
+
+      <h2>Extensiones PHP para SQL Server</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Extensión</th><th>SO</th><th>Driver</th><th>Características</th></tr></thead>
+        <tbody>
+          <tr><td><strong>sqlsrv</strong></td><td>Windows</td><td>Microsoft SQLSRV</td><td>API procedural, conectividad nativa, Azure SQL</td></tr>
+          <tr><td><strong>PDO_SQLSRV</strong></td><td>Windows</td><td>Microsoft PDO</td><td>Interfaz PDO, prepared statements, portabilidad limitada</td></tr>
+          <tr><td><strong>PDO_ODBC</strong></td><td>Windows / Linux</td><td>ODBC Driver 17/18</td><td>Portabilidad total, requiere ODBC Driver for SQL Server</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Conexión con sqlsrv</h2>
+
+      <div class="code-block"><span class="code-block__lang">PHP</span><pre><code class="language-php">&lt;?php
+$server = 'localhost';
+$database = 'MiBase';
+$username = 'sa';
+$password = 'ContraseñaSegura';
+
+$conn = sqlsrv_connect($server, [
+    'Database' => $database,
+    'UID'      => $username,
+    'PWD'      => $password,
+    'Encrypt'  => true,
+    'TrustServerCertificate' => true,
+]);
+
+if ($conn === false) {
+    die(print_r(sqlsrv_errors(), true));
+}
+
+// Consulta con prepared statement
+$stmt = sqlsrv_prepare($conn,
+    'SELECT * FROM Usuarios WHERE email = ?',
+    [&$email_param]
+);
+$email_param = 'user@example.com';
+sqlsrv_execute($stmt);
+
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    echo $row['nombre'] . PHP_EOL;
+}
+
+sqlsrv_free_stmt($stmt);
+sqlsrv_close($conn);
+</code></pre></div>
+
+      <h2>Conexión con PDO</h2>
+
+      <div class="code-block"><span class="code-block__lang">PHP</span><pre><code class="language-php">&lt;?php
+$dsn = 'sqlsrv:Server=localhost;Database=MiBase;Encrypt=true;TrustServerCertificate=true';
+$username = 'sa';
+$password = 'ContraseñaSegura';
+
+try {
+    $pdo = new PDO($dsn, $username, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+
+    // Prepared statement
+    $stmt = $pdo-&gt;prepare('SELECT * FROM Usuarios WHERE email = :email');
+    $stmt-&gt;execute([':email' => 'user@example.com']);
+
+    foreach ($stmt as $row) {
+        echo $row['nombre'] . PHP_EOL;
+    }
+} catch (PDOException $e) {
+    echo 'Error: ' . $e-&gt;getMessage();
+}
+</code></pre></div>
+
+      <h2>Manejo de Errores</h2>
+      <p>Con sqlsrv usa <code>sqlsrv_errors()</code>. Con PDO configura el modo de error a <code>ERRMODE_EXCEPTION</code> para capturar excepciones.</p>
+
+      <div class="code-block"><span class="code-block__lang">PHP</span><pre><code class="language-php">// sqlsrv: obtener errores
+if (sqlsrv_errors() !== null) {
+    foreach (sqlsrv_errors() as $error) {
+        echo "Código: {$error['code']} - {$error['message']}\n";
+    }
+}
+
+// PDO: capturar excepción
+try {
+    $pdo-&gt;exec('INSERT INTO ...');
+} catch (PDOException $e) {
+    error_log('SQL Error: ' . $e-&gt;getMessage());
+    throw $e;
+}
+</code></pre></div>
+
+      <nav class="prev-next-nav">
+        <a href="/temas/nivel-9-administracion/04-replicacion-basica.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Replicación Básica</div>
+        </a>
+        <a href="02-conexion-con-nodejs.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Conexión con Node.js</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

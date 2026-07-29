@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SARGability, evitar SELECT *, EXISTS vs IN, tipos de datos adecuados, Query Store y buenas prácticas.">
+  <title>Buenas Prácticas de Rendimiento · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 8 · Optimización</a><span class="sep">/</span><span>Buenas Prácticas de Rendimiento</span>
+      </div>
+      <h1 data-aos="fade-up">Buenas Prácticas de Rendimiento</h1>
+
+      <p>Este tema sintetiza las técnicas más efectivas para escribir consultas eficientes en SQL Server. Aplicar estas prácticas marca la diferencia entre un sistema responsivo y uno lento.</p>
+
+      <h2>Resumen de Prácticas</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Práctica</th><th>Recomendación</th><th>Impacto</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SARGability</td><td>Escribir WHERE que permitan index seek</td><td>Alto</td></tr>
+            <tr><td>Evitar SELECT *</td><td>Solo las columnas necesarias</td><td>Medio</td></tr>
+            <tr><td>EXISTS vs IN</td><td>Preferir EXISTS para subconsultas correlacionadas</td><td>Medio</td></tr>
+            <tr><td>Cursores</td><td>Usar set-based; evitar cursores</td><td>Alto</td></tr>
+            <tr><td>Tipos de datos</td><td>Usar el tipo más pequeño y preciso</td><td>Alto</td></tr>
+            <tr><td>Funciones en WHERE</td><td>Evitar funciones en columnas indexadas</td><td>Alto</td></tr>
+            <tr><td>Transacciones</td><td>Mantenerlas cortas y precisas</td><td>Medio</td></tr>
+            <tr><td>NOT IN vs NOT EXISTS</td><td>Preferir NOT EXISTS</td><td>Medio</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>1. SARGability</h3>
+      <p>Una expresión es SARGable (Search ARGument) cuando el optimizador puede usar un índice seek. Evita envolver columnas en funciones.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ No SARGable
+SELECT * FROM pedidos WHERE YEAR(fecha) = 2024;
+SELECT * FROM clientes WHERE UPPER(nombre) = 'JUAN';
+SELECT * FROM ventas WHERE fecha + 1 = GETDATE();
+
+-- ✅ SARGable
+SELECT * FROM pedidos WHERE fecha &gt;= '2024-01-01' AND fecha &lt; '2025-01-01';
+SELECT * FROM clientes WHERE nombre = 'Juan';
+SELECT * FROM ventas WHERE fecha = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));</code></pre></div>
+
+      <h3>2. Evitar SELECT *</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ SELECT *: trae columnas innecesarias, impide covering indexes
+SELECT * FROM clientes WHERE ciudad = 'Bogotá';
+
+-- ✅ Solo las columnas necesarias
+SELECT id_cliente, nombre, email FROM clientes WHERE ciudad = 'Bogotá';</code></pre></div>
+
+      <h3>3. EXISTS vs IN</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ IN con subconsulta (puede ser ineficiente)
+SELECT * FROM clientes WHERE id_cliente IN (
+    SELECT id_cliente FROM pedidos WHERE total &gt; 1000
+);
+
+-- ✅ EXISTS (corta al encontrar la primera coincidencia)
+SELECT c.* FROM clientes c
+WHERE EXISTS (
+    SELECT 1 FROM pedidos p
+    WHERE p.id_cliente = c.id_cliente AND p.total &gt; 1000
+);</code></pre></div>
+
+      <h3>4. NOT EXISTS vs NOT IN</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ NOT IN puede dar resultados inesperados con NULLs
+SELECT * FROM clientes WHERE id_cliente NOT IN (
+    SELECT id_cliente FROM pedidos
+);
+
+-- ✅ NOT EXISTS maneja NULLs correctamente
+SELECT * FROM clientes c
+WHERE NOT EXISTS (
+    SELECT 1 FROM pedidos p
+    WHERE p.id_cliente = c.id_cliente
+);</code></pre></div>
+
+      <h3>5. Tipos de Datos Apropiados</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ Tipos incorrectos
+CREATE TABLE usuarios (
+    activo VARCHAR(1),       -- Debería ser BIT
+    fecha_nacimiento DATETIME,  -- Solo fecha: usar DATE
+    salario FLOAT,              -- Dinero: usar DECIMAL(18,2) o MONEY
+    codigo_postal INT           -- Códigos con ceros a la izquierda: VARCHAR(10)
+);
+
+-- ✅ Tipos adecuados
+CREATE TABLE usuarios (
+    activo BIT,
+    fecha_nacimiento DATE,
+    salario DECIMAL(18,2),
+    codigo_postal VARCHAR(10)
+);</code></pre></div>
+
+      <h3>6. Evitar Cursores</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ Cursor innecesario
+DECLARE c CURSOR FOR SELECT id_producto, precio FROM productos;
+OPEN c; FETCH NEXT FROM c INTO @id, @precio;
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    UPDATE productos SET precio = @precio * 1.1 WHERE id_producto = @id;
+    FETCH NEXT FROM c INTO @id, @precio;
+END;
+CLOSE c; DEALLOCATE c;
+
+-- ✅ Set-based
+UPDATE productos SET precio = precio * 1.1;</code></pre></div>
+
+      <h3>7. Evitar Funciones en WHERE</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ Función en columna indexada
+SELECT * FROM pedidos WHERE DATEPART(month, fecha) = 12;
+
+-- ✅ Rango
+SELECT * FROM pedidos WHERE fecha &gt;= '2024-12-01' AND fecha &lt; '2025-01-01';</code></pre></div>
+
+      <h3>8. Transacciones Cortas</h3>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- ❌ Transacción larga con lógica innecesaria
+BEGIN TRAN;
+    DECLARE @total DECIMAL = 0;
+    SELECT @total = SUM(total) FROM pedidos WHERE fecha &gt;= '2024-01-01';
+    -- ... lógica de aplicación ...
+    UPDATE clientes SET saldo = @total WHERE id = 1;
+COMMIT;
+
+-- ✅ Transacción mínima
+BEGIN TRAN;
+    UPDATE clientes SET saldo = (SELECT SUM(total) FROM pedidos WHERE fecha &gt;= '2024-01-01')
+    WHERE id = 1;
+COMMIT;</code></pre></div>
+
+      <div class="callout callout-tip">
+        <div class="callout__title"><i class="bi bi-lightbulb"></i>Query Store</div>
+        <p>El Query Store (disponible desde SQL Server 2016) actúa como una "caja negra" que registra el rendimiento histórico de las consultas. Permite identificar regresiones, forzar planes de ejecución y analizar tendencias. Habilítalo con <code>ALTER DATABASE MiBD SET QUERY_STORE = ON;</code>. Es la herramienta más útil para diagnóstico de rendimiento en producción.</p>
+      </div>
+
+      <div class="query-divider">/* --- Fin de Buenas Prácticas de Rendimiento --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="03-estadisticas-y-query-tuning.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Estadísticas y Query Tuning</div>
+        </a>
+        <a href="/temas/nivel-9-administracion/01-backup-y-restore.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Nivel 9: Backup y Restore</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

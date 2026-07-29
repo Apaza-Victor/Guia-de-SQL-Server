@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Planes de ejecución reales vs estimados, operadores clave, SHOWPLAN_XML, STATISTICS TIME/IO.">
+  <title>Planes de Ejecución · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 8 · Optimización</a><span class="sep">/</span><span>Planes de Ejecución</span>
+      </div>
+      <h1 data-aos="fade-up">Planes de Ejecución</h1>
+
+      <p>El plan de ejecución muestra cómo SQL Server ejecuta una consulta: qué índices usa, cómo combina tablas y qué operaciones realiza. Leer planes es la habilidad más importante para la optimización.</p>
+
+      <h2>Plan Estimado vs Plan Real</h2>
+      <ul>
+        <li><strong>Plan estimado:</strong> Muestra el plan que el optimizador calcula sin ejecutar la consulta. Se obtiene con <code>SET SHOWPLAN_XML ON</code> o el botón "Display Estimated Execution Plan".</li>
+        <li><strong>Plan real:</strong> Incluye métricas reales (filas devueltas, tiempo por operador). Se obtiene con <code>SET STATISTICS XML ON</code> o "Include Actual Execution Plan".</li>
+      </ul>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Plan estimado (no ejecuta)
+SET SHOWPLAN_XML ON;
+SELECT * FROM clientes WHERE ciudad = 'Bogotá';
+SET SHOWPLAN_XML OFF;
+
+-- Plan real con estadísticas
+SET STATISTICS TIME ON;
+SET STATISTICS IO ON;
+SET STATISTICS XML ON;
+SELECT * FROM clientes WHERE ciudad = 'Bogotá';
+SET STATISTICS TIME OFF;
+SET STATISTICS IO OFF;
+SET STATISTICS XML OFF;</code></pre></div>
+
+      <h2>Operadores Comunes</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>Operador</th><th>Significado</th><th>Cuándo es bueno/malo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Clustered Index Scan</td><td>Recorre toda la tabla (o índice clustered)</td><td>Malo si la tabla es grande y devuelve pocas filas; inevitable si devuelve muchas</td></tr>
+            <tr><td>Clustered Index Seek</td><td>Busca directamente por clave del índice</td><td>Excelente, acceso rápido a filas específicas</td></tr>
+            <tr><td>Nonclustered Index Seek + Key Lookup</td><td>Busca en índice no clúster + recupera datos del clúster</td><td>Aceptable, pero muchos lookups indican que faltan columnas incluidas</td></tr>
+            <tr><td>Nested Loops</td><td>Para cada fila de una tabla, busca filas en la otra</td><td>Bueno si una tabla es pequeña o el join está muy filtrado</td></tr>
+            <tr><td>Hash Match</td><td>Construye una tabla hash en memoria para el join</td><td>Bueno para joins grandes sin índices adecuados</td></tr>
+            <tr><td>Merge Join</td><td>Join ordenado (requiere datos ordenados)</td><td>Excelente para conjuntos grandes ya ordenados</td></tr>
+            <tr><td>Sort</td><td>Ordena datos (por ORDER BY, GROUP BY, Merge Join)</td><td>Costoso; evitar si se puede indexar el orden</td></tr>
+            <tr><td>Spool (Eager/Lazy)</td><td>Almacena resultados intermedios</td><td>A veces necesario; excesivo puede indicar plan subóptimo</td></tr>
+            <tr><td>Table Scan</td><td>Recorre toda la tabla (heap sin índice)</td><td>Generalmente malo — tabla sin índice clúster</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Identificar Operaciones Costosas</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">SET STATISTICS TIME ON;
+SET STATISTICS IO ON;
+
+SELECT c.nombre, COUNT(p.id_pedido) AS total_pedidos
+FROM clientes c
+LEFT JOIN pedidos p ON c.id_cliente = p.id_cliente
+WHERE c.ciudad = 'Medellín'
+GROUP BY c.nombre
+ORDER BY total_pedidos DESC;
+
+SET STATISTICS IO OFF;
+SET STATISTICS TIME OFF;</code></pre></div>
+
+      <p>La salida de <code>STATISTICS IO</code> muestra lecturas lógicas (page lookups) y físicas. Menos lecturas = mejor rendimiento. <code>STATISTICS TIME</code> muestra tiempos de CPU y elapsed.</p>
+
+      <div class="callout callout-tip">
+        <div class="callout__title"><i class="bi bi-lightbulb"></i>Usa SSMS para planes gráficos</div>
+        <p>SQL Server Management Studio (SSMS) muestra planes de ejecución gráficos que facilitan identificar operadores costosos (el grosor de las flechas indica volumen de filas, el color rojo indica advertencias). Pasa el mouse sobre cada operador para ver costo relativo, filas estimadas vs reales y otras métricas. Para análisis avanzado, usa <code>Plan Explorer</code> (gratuito) de SolarWinds.</p>
+      </div>
+
+      <h2>Plan Cache</h2>
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Consultar planes en caché
+SELECT
+    qs.total_worker_time / qs.execution_count AS avg_cpu,
+    qs.total_logical_reads / qs.execution_count AS avg_reads,
+    SUBSTRING(st.text, qs.statement_start_offset/2 + 1,
+        (CASE WHEN qs.statement_end_offset = -1
+            THEN LEN(CONVERT(NVARCHAR(MAX), st.text)) * 2
+            ELSE qs.statement_end_offset - qs.statement_start_offset
+        END) / 2) AS query_text,
+    qp.query_plan
+FROM sys.dm_exec_query_stats qs
+CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) st
+CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) qp
+ORDER BY avg_cpu DESC;</code></pre></div>
+
+      <div class="query-divider">/* --- Fin de Planes de Ejecución --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="01-indices-avanzados.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Índices Avanzados</div>
+        </a>
+        <a href="03-estadisticas-y-query-tuning.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Estadísticas y Query Tuning</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

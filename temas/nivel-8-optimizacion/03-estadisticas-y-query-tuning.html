@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Estadísticas de SQL Server, DBCC SHOW_STATISTICS, cardinalidad, parameter sniffing y DMVs de tuning.">
+  <title>Estadísticas y Query Tuning · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 8 · Optimización</a><span class="sep">/</span><span>Estadísticas y Query Tuning</span>
+      </div>
+      <h1 data-aos="fade-up">Estadísticas y Query Tuning</h1>
+
+      <p>Las estadísticas contienen información sobre la distribución de datos en columnas y son esenciales para que el optimizador estime cardinalidades (número de filas) y elija el plan más eficiente. Sin estadísticas actualizadas, el optimizador trabaja a ciegas.</p>
+
+      <h2>¿Qué son las Estadísticas?</h2>
+      <p>SQL Server mantiene histogramas y densidades de las columnas indexadas y, opcionalmente, de columnas no indexadas. El histograma divide los datos en hasta 200 rangos (steps) y cuenta la frecuencia.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Ver estadísticas de una tabla
+DBCC SHOW_STATISTICS('clientes', 'idx_clientes_ciudad');
+
+-- Actualizar estadísticas
+UPDATE STATISTICS clientes;
+UPDATE STATISTICS clientes idx_clientes_ciudad;
+UPDATE STATISTICS clientes WITH FULLSCAN;     -- Escaneo completo
+UPDATE STATISTICS clientes WITH SAMPLE 10 PERCENT;  -- Muestreo</code></pre></div>
+
+      <h2>Auto-Update de Estadísticas</h2>
+      <p>SQL Server actualiza estadísticas automáticamente cuando cambian suficientes filas. El umbral es:</p>
+      <ul>
+        <li>Tablas de &gt;500 filas: cada 500 + (20% de filas) modificaciones.</li>
+        <li>Tablas temporales y variables de tabla pueden no tener estadísticas actualizadas.</li>
+      </ul>
+      <p>Se puede controlar con <code>AUTO_UPDATE_STATISTICS</code> a nivel de base de datos.</p>
+
+      <h2>Estimación de Cardinalidad (CE)</h2>
+      <p>El optimizador usa la cardinalidad estimada para elegir operadores (Nested Loops, Hash Match, Merge Join). Una mala estimación lleva a malos planes. SQL Server 2014+ introdujo el CE de nueva generación (Cardinality Estimation 130+ y 140+).</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Ver nivel de CE de la BD
+SELECT name, compatibility_level FROM sys.databases;
+
+-- Forzar CE legacy (para compatibilidad)
+ALTER DATABASE MiBD SET COMPATIBILITY_LEVEL = 120;
+-- Usar CE de SQL Server 2017 (140)
+ALTER DATABASE MiBD SET COMPATIBILITY_LEVEL = 140;</code></pre></div>
+
+      <h2>Parameter Sniffing</h2>
+      <p>SQL Server genera un plan de ejecución basado en los valores de los parámetros en la primera ejecución ("sniffing"). Ese plan se reutiliza, pero puede ser subóptimo para otros valores.</p>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Síntoma: SP funciona rápido para unos valores y lento para otros
+CREATE PROCEDURE uspBuscarPedidos
+    @FechaInicio DATE
+AS
+    SELECT * FROM pedidos WHERE fecha &gt;= @FechaInicio;
+
+-- Soluciones:
+-- 1. WITH RECOMPILE (nuevo plan cada vez)
+CREATE PROCEDURE uspBuscarPedidos
+    @FechaInicio DATE
+WITH RECOMPILE
+AS ...
+
+-- 2. OPTIMIZE FOR UNKNOWN (usa promedio)
+SELECT * FROM pedidos
+WHERE fecha &gt;= @FechaInicio
+OPTION (OPTIMIZE FOR (@FechaInicio UNKNOWN));
+
+-- 3. OPTION (RECOMPILE) solo en la consulta
+SELECT * FROM pedidos
+WHERE fecha &gt;= @FechaInicio
+OPTION (RECOMPILE);</code></pre></div>
+
+      <div class="callout callout-note">
+        <div class="callout__title"><i class="bi bi-info-circle"></i>Parameter sniffing</div>
+        <p>El parameter sniffing no es un bug; es una característica de optimización. El problema surge cuando los datos están desbalanceados. Las soluciones incluyen <code>WITH RECOMPILE</code>, <code>OPTIMIZE FOR UNKNOWN</code>, o dividir el SP con lógica condicional para diferentes rangos de valores.</p>
+      </div>
+
+      <h2>DMVs Útiles para Query Tuning</h2>
+
+      <div class="table-responsive-wrapper">
+        <table class="table-guide">
+          <thead>
+            <tr><th>DMV</th><th>Propósito</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>sys.dm_db_missing_index_details</code></td><td>Índices sugeridos por el optimizador</td></tr>
+            <tr><td><code>sys.dm_db_missing_index_columns</code></td><td>Columnas específicas para el índice faltante</td></tr>
+            <tr><td><code>sys.dm_exec_query_stats</code></td><td>Estadísticas de consultas (CPU, lecturas, duración)</td></tr>
+            <tr><td><code>sys.dm_exec_query_plan</code></td><td>Plan de ejecución XML</td></tr>
+            <tr><td><code>sys.dm_db_index_usage_stats</code></td><td>Uso de índices (lecturas vs escrituras)</td></tr>
+            <tr><td><code>sys.dm_exec_sql_text</code></td><td>Texto SQL de un plan o solicitud</td></tr>
+            <tr><td><code>sys.dm_exec_requests</code></td><td>Consultas activas en el servidor</td></tr>
+            <tr><td><code>sys.dm_os_wait_stats</code></td><td>Estadísticas de esperas (cuellos de botella)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Índices faltantes (missing indexes)
+SELECT
+    migs.avg_total_user_cost * migs.avg_user_impact / 100 AS improvement,
+    mid.statement AS tabla,
+    mid.equality_columns,
+    mid.inequality_columns,
+    mid.included_columns,
+    migs.unique_compiles
+FROM sys.dm_db_missing_index_groups mig
+JOIN sys.dm_db_missing_index_group_stats migs
+    ON migs.group_handle = mig.index_group_handle
+JOIN sys.dm_db_missing_index_details mid
+    ON mig.index_handle = mid.index_handle
+WHERE mid.database_id = DB_ID()
+ORDER BY improvement DESC;</code></pre></div>
+
+      <div class="query-divider">/* --- Fin de Estadísticas y Query Tuning --- */</div>
+
+      <nav class="prev-next-nav">
+        <a href="02-planes-de-ejecucion.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Planes de Ejecución</div>
+        </a>
+        <a href="04-buenas-practicas-de-rendimiento.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Buenas Prácticas de Rendimiento</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

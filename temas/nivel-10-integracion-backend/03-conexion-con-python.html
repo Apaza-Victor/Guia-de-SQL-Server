@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Conexión a SQL Server desde Python con pyodbc y pandas. Ejemplos de consultas, parámetros y mejores prácticas.">
+  <title>Conexión con Python · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 10 · Integración Backend</a><span class="sep">/</span><span>Conexión con Python</span>
+      </div>
+      <h1 data-aos="fade-up">Conexión con Python</h1>
+
+      <p>Python se conecta a SQL Server principalmente mediante <code>pyodbc</code> o <code>pymssql</code>. La opción más recomendada es <code>pyodbc</code> con el driver ODBC de Microsoft.</p>
+
+      <div class="callout callout-note"><div class="callout__title"><i class="bi bi-info-circle"></i>ODBC Driver</div><p>Necesitas instalar el ODBC Driver for SQL Server (versión 17 o 18) desde Microsoft. En Linux: <code>curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -</code> y luego instala <code>msodbcsql18</code>.</p></div>
+
+      <h2>Bibliotecas de Python para SQL Server</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Biblioteca</th><th>Driver</th><th>Comentario</th></tr></thead>
+        <tbody>
+          <tr><td><strong>pyodbc</strong></td><td>ODBC Driver 17/18</td><td>Recomendada, activa, soporte completo</td></tr>
+          <tr><td><strong>pymssql</strong></td><td>FreeTDS</td><td>Liviana, sin dependencias ODBC, menos actualizada</td></tr>
+          <tr><td><strong>SQLAlchemy</strong></td><td>pyodbc (por defecto)</td><td>ORM, ideal con pandas y FastAPI</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Instalación</h2>
+
+      <div class="code-block"><span class="code-block__lang">Bash</span><pre><code class="language-bash">pip install pyodbc pandas sqlalchemy
+</code></pre></div>
+
+      <h2>Conexión Básica con pyodbc</h2>
+
+      <div class="code-block"><span class="code-block__lang">Python</span><pre><code class="language-python">import pyodbc
+
+conn_str = (
+    'DRIVER={ODBC Driver 18 for SQL Server};'
+    'SERVER=localhost;'
+    'DATABASE=MiBase;'
+    'UID=sa;'
+    'PWD=ContraseñaSegura;'
+    'Encrypt=yes;'
+    'TrustServerCertificate=yes;'
+)
+
+conn = pyodbc.connect(conn_str)
+cursor = conn.cursor()
+
+# Consulta con parámetros
+cursor.execute(
+    'SELECT * FROM Usuarios WHERE email = ?',
+    'user@example.com'
+)
+
+for row in cursor.fetchall():
+    print(row.nombre, row.email)
+
+cursor.close()
+conn.close()
+</code></pre></div>
+
+      <h2>Integración con Pandas</h2>
+
+      <div class="code-block"><span class="code-block__lang">Python</span><pre><code class="language-python">import pandas as pd
+from sqlalchemy import create_engine
+
+# Conexión vía SQLAlchemy + pyodbc
+conn_str = (
+    'mssql+pyodbc://sa:ContraseñaSegura@localhost:1433/MiBase'
+    '?driver=ODBC+Driver+18+for+SQL+Server'
+    '&Encrypt=yes&TrustServerCertificate=yes'
+)
+
+engine = create_engine(conn_str)
+
+# Leer directamente a DataFrame
+df = pd.read_sql('SELECT * FROM Ventas WHERE fecha >= :fecha',
+                 engine, params={'fecha': '2026-01-01'})
+
+# Escribir DataFrame a SQL Server
+df.to_sql('Ventas_Backup', engine, if_exists='replace', index=False)
+
+print(df.head())
+</code></pre></div>
+
+      <h2>Transacciones</h2>
+
+      <div class="code-block"><span class="code-block__lang">Python</span><pre><code class="language-python">conn = pyodbc.connect(conn_str)
+conn.autocommit = False
+
+try:
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO Log (msg) VALUES ('Inicio')")
+    cursor.execute("UPDATE Cuenta SET saldo = saldo - 100 WHERE id = 1")
+    conn.commit()
+except Exception as e:
+    conn.rollback()
+    print('Transacción revertida:', e)
+finally:
+    conn.close()
+</code></pre></div>
+
+      <nav class="prev-next-nav">
+        <a href="02-conexion-con-nodejs.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Conexión con Node.js</div>
+        </a>
+        <a href="04-conexion-con-dotnet-java.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Conexión con .NET y Java</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

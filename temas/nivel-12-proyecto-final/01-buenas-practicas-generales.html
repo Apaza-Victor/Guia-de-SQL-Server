@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Buenas prácticas generales en SQL Server: naming conventions, coding standards, error handling, documentación y control de versiones.">
+  <title>Buenas Prácticas Generales · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 12 · Proyecto Final</a><span class="sep">/</span><span>Buenas Prácticas Generales</span>
+      </div>
+      <h1 data-aos="fade-up">Buenas Prácticas Generales</h1>
+
+      <p>Escribir código SQL limpio, consistente y mantenible es tan importante como la funcionalidad. Estas buenas prácticas te ayudarán a trabajar en equipo y a mantener bases de datos saludables.</p>
+
+      <div class="callout callout-tip"><div class="callout__title"><i class="bi bi-lightbulb"></i>Guía de estilo del equipo</div><p>Define y documenta una guía de estilo para tu equipo. La consistencia es más importante que la elección específica de cada convención.</p></div>
+
+      <h2>Naming Conventions</h2>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Objeto</th><th>Convención</th><th>Ejemplo</th></tr></thead>
+        <tbody>
+          <tr><td>Tablas</td><td>PascalCase, singular o plural (consistente)</td><td><code>Customers</code>, <code>OrderDetail</code></td></tr>
+          <tr><td>Columnas</td><td>camelCase o PascalCase (consistente)</td><td><code>firstName</code>, <code>OrderDate</code></td></tr>
+          <tr><td>Primary Keys</td><td><code>PK_NombreTabla</code></td><td><code>PK_Customers</code></td></tr>
+          <tr><td>Foreign Keys</td><td><code>FK_TablaActual_TablaReferencia</code></td><td><code>FK_Orders_Customers</code></td></tr>
+          <tr><td>Índices</td><td><code>IX_NombreTabla_Columnas</code></td><td><code>IX_Orders_CustomerID</code></td></tr>
+          <tr><td>Stored Procedures</td><td><code>usp_NombreDescriptivo</code></td><td><code>usp_GetOrdersByCustomer</code></td></tr>
+          <tr><td>Vistas</td><td><code>v_NombreDescriptivo</code></td><td><code>v_ClientesActivos</code></td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Coding Standards</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- MAL formateado
+select * from customers where customerid=1 and status='active';
+
+-- BIEN formateado
+SELECT c.CustomerID,
+       c.FirstName,
+       c.LastName,
+       c.Email
+FROM dbo.Customers c
+WHERE c.CustomerID = 1
+  AND c.Status = 'Active'
+ORDER BY c.LastName;
+</code></pre></div>
+
+      <p>Reglas recomendadas:</p>
+      <ul>
+        <li><strong>Mayúsculas</strong> para palabras clave SQL (<code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>AND</code>)</li>
+        <li><strong>Minúsculas</strong> para objetos y columnas</li>
+        <li>Usar <strong>alias de tabla</strong> (prefijo corto: <code>c</code>, <code>o</code>)</li>
+        <li><strong>Indentación</strong> consistente (2 o 4 espacios)</li>
+        <li>Esquematizar siempre (<code>dbo.Tabla</code>)</li>
+        <li>Terminar sentencias con <code>;</code></li>
+      </ul>
+
+      <h2>Error Handling</h2>
+
+      <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">CREATE PROCEDURE dbo.usp_InsertOrder
+    @CustomerID INT,
+    @Total      DECIMAL(10,2)
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        INSERT INTO dbo.Orders (CustomerID, Total, OrderDate)
+        VALUES (@CustomerID, @Total, GETDATE());
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+    END CATCH
+END;
+</code></pre></div>
+
+      <h2>Control de Versiones para Bases de Datos</h2>
+      <p>Las bases de datos deben versionarse como el código. Usa migraciones (EF Core Migrations, Flyway, Liquibase, Alembic) para aplicar cambios de forma controlada y repetible.</p>
+      <p>Mantén un script <code>init.sql</code> con el esquema completo y scripts incrementales <code>V001__description.sql</code> con cada cambio.</p>
+
+      <nav class="prev-next-nav">
+        <a href="/temas/nivel-11-avanzado-experto/07-always-on-alta-disponibilidad.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Always On · Alta Disponibilidad</div>
+        </a>
+        <a href="02-checklist-de-experto.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Checklist de Experto</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

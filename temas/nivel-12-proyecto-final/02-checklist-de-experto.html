@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Checklist de experto SQL Server: autoevaluación por categorías con checkboxes. SQL básico, T-SQL, diseño, rendimiento, seguridad, administración, backend.">
+  <title>Checklist de Experto · SQL Server Guía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="/assets/css/variables.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <div class="container-guide" style="padding-block:var(--space-lg);">
+      <div class="breadcrumb-guide">
+        <a href="/index.html">Inicio</a><span class="sep">/</span><a href="/index.html">Nivel 12 · Proyecto Final</a><span class="sep">/</span><span>Checklist de Experto</span>
+      </div>
+      <h1 data-aos="fade-up">Checklist de Experto</h1>
+
+      <p>Evalúa tu nivel de conocimiento con este checklist organizado por categorías. Marca los temas que dominas. Al final, calcula tu puntuación.</p>
+
+      <div class="callout callout-tip"><div class="callout__title"><i class="bi bi-lightbulb"></i>Seguimiento de progreso</div><p>Revisa este checklist cada mes para medir tu avance. Identifica las áreas débiles y enfócate en mejorarlas. El objetivo es tener todo marcado.</p></div>
+
+      <h2>SQL Básico</h2>
+      <p><label><input type="checkbox"> SELECT, FROM, WHERE, ORDER BY</label></p>
+      <p><label><input type="checkbox"> JOIN (INNER, LEFT, RIGHT, FULL, CROSS)</label></p>
+      <p><label><input type="checkbox"> GROUP BY, HAVING, funciones agregadas</label></p>
+      <p><label><input type="checkbox"> Subconsultas correlacionadas y no correlacionadas</label></p>
+      <p><label><input type="checkbox"> UNION, INTERSECT, EXCEPT</label></p>
+
+      <h2>T-SQL</h2>
+      <p><label><input type="checkbox"> Variables, control de flujo (IF, WHILE, CASE)</label></p>
+      <p><label><input type="checkbox"> Stored Procedures y funciones escalares/tabulares</label></p>
+      <p><label><input type="checkbox"> Triggers (AFTER, INSTEAD OF)</label></p>
+      <p><label><input type="checkbox"> Cursores (y cuándo evitarlos)</label></p>
+      <p><label><input type="checkbox"> Manejo de errores (TRY/CATCH, RAISERROR, THROW)</label></p>
+
+      <h2>Diseño de Bases de Datos</h2>
+      <p><label><input type="checkbox"> Normalización (1NF, 2NF, 3NF)</label></p>
+      <p><label><input type="checkbox"> Claves primarias, foráneas, constraints</label></p>
+      <p><label><input type="checkbox"> Índices (clustered, nonclustered, covering, filtrados)</label></p>
+      <p><label><input type="checkbox"> Diagramas ER y herramientas de modelado</label></p>
+      <p><label><input type="checkbox"> Denormalización estratégica para rendimiento</label></p>
+
+      <h2>Rendimiento</h2>
+      <p><label><input type="checkbox"> Lectura de planes de ejecución (operadores, costos)</label></p>
+      <p><label><input type="checkbox"> Índices y tuning de consultas (missing indexes, key lookups)</label></p>
+      <p><label><input type="checkbox"> Estadísticas y optimizador de consultas</label></p>
+      <p><label><input type="checkbox"> DMVs de rendimiento (sys.dm_exec_query_stats, etc.)</label></p>
+      <p><label><input type="checkbox"> Query Store y Forced Parameterization</label></p>
+
+      <h2>Seguridad</h2>
+      <p><label><input type="checkbox"> Logins, usuarios, roles (server y database)</label></p>
+      <p><label><input type="checkbox"> GRANT, DENY, REVOKE a nivel de objetos</label></p>
+      <p><label><input type="checkbox"> Row-Level Security (RLS)</label></p>
+      <p><label><input type="checkbox"> Dynamic Data Masking</label></p>
+      <p><label><input type="checkbox"> Always Encrypted</label></p>
+
+      <h2>Administración</h2>
+      <p><label><input type="checkbox"> Backup y Restore (FULL, DIFF, LOG)</label></p>
+      <p><label><input type="checkbox"> Mantenimiento (índices, estadísticas, CHECKDB)</label></p>
+      <p><label><input type="checkbox"> SQL Server Agent (jobs, schedules, alerts)</label></p>
+      <p><label><input type="checkbox"> Monitoreo con Activity Monitor, DMVs, Performance Dashboard</label></p>
+      <p><label><input type="checkbox"> Always On Availability Groups</label></p>
+
+      <h2>Integración Backend</h2>
+      <p><label><input type="checkbox"> PHP (sqlsrv o PDO)</label></p>
+      <p><label><input type="checkbox"> Node.js (mssql / tedious)</label></p>
+      <p><label><input type="checkbox"> Python (pyodbc / SQLAlchemy)</label></p>
+      <p><label><input type="checkbox"> .NET (SqlClient / Entity Framework)</label></p>
+      <p><label><input type="checkbox"> Java (JDBC / Hibernate)</label></p>
+
+      <h2>Puntuación</h2>
+      <p>Total de ítems: <strong>35</strong>. Cada ítem marcado = 2.86 puntos. Puntuación máxima: 100.</p>
+
+      <div class="table-responsive-wrapper"><table class="table-guide">
+        <thead><tr><th>Rango</th><th>Nivel</th></tr></thead>
+        <tbody>
+          <tr><td>0 - 30</td><td>Junior — sigue estudiando</td></tr>
+          <tr><td>31 - 60</td><td>Intermedio — buena base, profundiza</td></tr>
+          <tr><td>61 - 85</td><td>Avanzado — sólido, experto en varias áreas</td></tr>
+          <tr><td>86 - 100</td><td>Experto — listo para proyectos complejos</td></tr>
+        </tbody>
+      </table></div>
+
+      <nav class="prev-next-nav">
+        <a href="01-buenas-practicas-generales.html" class="nav-prev">
+          <div class="nav-label">← Anterior</div>
+          <div class="nav-title">Buenas Prácticas Generales</div>
+        </a>
+        <a href="03-proyecto-integrador.html" class="nav-next">
+          <div class="nav-label">Siguiente →</div>
+          <div class="nav-title">Proyecto Integrador</div>
+        </a>
+      </nav>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <a href="#" class="btn-back-top" aria-label="Volver arriba"><i class="bi bi-chevron-up"></i></a>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/assets/js/theme-switcher.js"></script>
+  <script src="/assets/js/include-partials.js"></script>
+  <script src="/assets/js/navbar.js"></script>
+  <script src="/assets/js/code-copy.js"></script>
+  <script src="/assets/js/toc-scrollspy.js"></script>
+  <script src="/assets/js/search.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
