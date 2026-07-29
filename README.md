@@ -2,6 +2,8 @@
 
 Guía web interactiva de teoría y práctica progresiva de **SQL Server**, desde nivel cero hasta nivel experto, incluyendo integración con backends (PHP, Node.js, Python, .NET, Java) y entornos locales de prueba.
 
+🌐 **Sitio en vivo:** [apaza-victor.github.io/Guia-de-SQL-Server](https://apaza-victor.github.io/Guia-de-SQL-Server/)
+
 ## Contenido
 
 - **12 niveles** con **54 temas** que cubren toda la curva de aprendizaje
@@ -12,6 +14,19 @@ Guía web interactiva de teoría y práctica progresiva de **SQL Server**, desde
 - Sección de recursos externos gratuitos
 - Glosario de términos SQL
 
+## Funcionalidades
+
+| Característica | Detalle |
+|---|---|
+| 🎨 Tema oscuro/claro | Persiste en `localStorage` |
+| 🔍 Búsqueda global | Atajos `Ctrl+K` o `/` — índice de 54+ temas |
+| ⌨️ Consola animada | Typewriter SQL en hero con sintaxis coloreada |
+| 💡 Tips bar | Barra fija inferior con consejos rotativos (30 s) |
+| ⬆️ Volver arriba | Botón flotante animado |
+| 📱 Responsive | Mobile-first con menú offcanvas |
+| 📋 Copiar código | Botón one-click en todos los bloques Prism |
+| 🧭 TOC scrollspy | Resaltado automático del índice lateral |
+
 ## Stack tecnológico
 
 | Categoría | Tecnología |
@@ -21,7 +36,7 @@ Guía web interactiva de teoría y práctica progresiva de **SQL Server**, desde
 | CSS propio | CSS3 + variables (`:root`) con theming dark/light |
 | JavaScript | Vanilla JS (ES6+) |
 | Iconos | Bootstrap Icons |
-| Animaciones | AOS (Animate On Scroll) |
+| Animaciones | AOS (Animate On Scroll) + typewriter propio |
 | Resaltado de código | Prism.js |
 | Fuentes | Space Grotesk, Inter, JetBrains Mono (Google Fonts) |
 
@@ -36,14 +51,14 @@ Guía web interactiva de teoría y práctica progresiva de **SQL Server**, desde
 
 ```
 /
-├── index.html              → Página principal
+├── index.html              → Página principal (hero + consola typewriter)
 ├── recursos.html            → Recursos externos
 ├── glosario.html            → Glosario de términos
 ├── acerca.html              → Acerca del proyecto
 ├── assets/
-│   ├── css/                 → Hojas de estilo
-│   ├── js/                  → Scripts (vanilla JS)
-│   └── partials/            → Header y footer reutilizables
+│   ├── css/                 → 5 hojas de estilo (variables, base, layout, components, responsive)
+│   ├── js/                  → 9 scripts vanilla JS
+│   └── partials/            → Header y footer reutilizables (cargados vía fetch)
 ├── temas/
 │   ├── nivel-1-fundamentos/ → 4 temas
 │   ├── nivel-2-sql-basico/  → 5 temas
@@ -62,6 +77,6 @@ Guía web interactiva de teoría y práctica progresiva de **SQL Server**, desde
 
 ## Copyright
 
-© 2026 · Apaza Victor · SQL Server: De Cero a Experto · Todos los derechos reservados.
+© 2026 · **Apaza Victor** · SQL Server: De Cero a Experto · Todos los derechos reservados.
 
 Este proyecto es una guía educativa de referencia y aprendizaje. El contenido puede ser utilizado libremente para fines de aprendizaje personal.
