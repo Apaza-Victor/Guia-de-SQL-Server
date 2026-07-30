@@ -30,6 +30,32 @@
 
       <p>PHP puede conectarse a SQL Server mediante dos extensiones principales: <code>sqlsrv</code> (nativa de Microsoft para Windows) y <code>PDO</code> (interfaz portable que también funciona en Linux).</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          flowchart LR
+            subgraph "Backend"
+              PHP[PHP App]
+              Node[Node.js App]
+              Python[Python App]
+            end
+            subgraph "Drivers"
+              SQLSRV[SQLSRV / PDO]
+              Tedious[msnodesqlv8 / tedious]
+              PyODBC[pyodbc / pymssql]
+            end
+            subgraph "Base de Datos"
+              SQL[SQL Server]
+            end
+            PHP --> SQLSRV
+            Node --> Tedious
+            Python --> PyODBC
+            SQLSRV --> SQL
+            Tedious --> SQL
+            PyODBC --> SQL
+        </div>
+        <div class="diagram-box__caption">Arquitectura de conexión desde múltiples lenguajes a SQL Server</div>
+      </div>
+
       <div class="callout callout-tip"><div class="callout__title"><i class="bi bi-lightbulb"></i>Usa PDO para portabilidad</div><p>Si tu aplicación necesita funcionar en Windows y Linux, elige PDO. Cambiar de motor de base de datos solo requiere modificar el DSN. sqlsrv solo está disponible en Windows.</p></div>
 
       <h2>Extensiones PHP para SQL Server</h2>

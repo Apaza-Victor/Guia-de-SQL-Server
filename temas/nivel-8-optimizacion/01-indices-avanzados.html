@@ -30,6 +30,23 @@
 
       <p>Más allá de los índices clustered y nonclustered básicos, SQL Server ofrece tipos especializados que pueden mejorar drásticamente el rendimiento en escenarios específicos.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          graph TD
+            subgraph "Índice Clustered"
+              B+[B+Tree] --> D1[Datos Página 1]
+              B+ --> D2[Datos Página 2]
+              B+ --> D3[Datos Página 3]
+            end
+            subgraph "Índice Non-Clustered"
+              B2[B+Tree] --> R1[Apuntador a Fila]
+              B2 --> R2[Apuntador a Fila]
+              B2 --> R3[Apuntador a Fila]
+            end
+        </div>
+        <div class="diagram-box__caption">Estructura de árbol B+ en índices Clustered y Non-Clustered</div>
+      </div>
+
       <h2>Tipos de Índices Avanzados</h2>
 
       <div class="table-responsive-wrapper">

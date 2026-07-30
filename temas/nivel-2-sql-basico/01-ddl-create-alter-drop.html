@@ -30,6 +30,16 @@
 
       <p>El <strong>DDL</strong> (Data Definition Language) es un subconjunto de SQL que permite definir y modificar la estructura de los objetos de la base de datos. Los comandos principales son <code>CREATE</code>, <code>ALTER</code> y <code>DROP</code>.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          graph LR
+            Create[CREATE<br>Crear objeto] --> Alter[ALTER<br>Modificar objeto]
+            Alter --> Drop[DROP<br>Eliminar objeto]
+            Drop -.->|Recrear| Create
+        </div>
+        <div class="diagram-box__caption">Ciclo de vida de los objetos de base de datos con DDL</div>
+      </div>
+
       <div class="table-responsive-wrapper">
         <table class="table-guide">
           <thead>

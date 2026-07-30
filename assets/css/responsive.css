@@ -70,6 +70,9 @@
 }
 .table-responsive-wrapper .table-guide { margin-bottom: 0; }
 
+/* ---------- HAMBURGUESA ---------- */
+.navbar-toggler { margin-right: 1rem; }
+
 /* ---------- IMPRESIÓN ---------- */
 @media print {
   .site-navbar,

@@ -30,6 +30,19 @@
 
       <p>Un CTE (Common Table Expression) recursivo permite ejecutar consultas que se llaman a sí mismas, ideales para recorrer estructuras jerárquicas como organigramas, categorías o árboles.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          graph TD
+            Anchor[Ancla: SELECT inicial<br>Nivel 0] --> Rec1[Recursión: Nivel 1<br>UNION ALL + JOIN]
+            Rec1 --> Rec2[Recursión: Nivel 2<br>UNION ALL + JOIN]
+            Rec2 --> RecN[Recursión: Nivel N<br>UNION ALL + JOIN]
+            RecN --> Check{¿Condición<br>de parada?}
+            Check -->|No|RecN
+            Check -->|Sí| Result([Resultado final<br>SELECT * FROM CTE])
+        </div>
+        <div class="diagram-box__caption">Flujo de ejecución de un CTE recursivo en T-SQL</div>
+      </div>
+
       <div class="callout callout-warning"><div class="callout__title"><i class="bi bi-exclamation-circle"></i>Recursión infinita</div><p>Sin <code>OPTION (MAXRECURSION N)</code> el límite por defecto es 100. Si tu recursión excede ese número, SQL Server detiene la consulta con un error. Usa <code>MAXRECURSION 0</code> para ilimitado, pero con precaución.</p></div>
 
       <h2>Sintaxis Básica</h2>

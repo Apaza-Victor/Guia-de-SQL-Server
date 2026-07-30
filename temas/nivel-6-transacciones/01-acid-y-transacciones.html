@@ -30,6 +30,20 @@
 
       <p>Una transacción es una unidad lógica de trabajo que consta de una o más operaciones sobre la base de datos. SQL Server garantiza la integridad de las transacciones mediante las propiedades ACID.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          flowchart LR
+            BT[BEGIN TRAN] --> Op1[Operación 1]
+            Op1 --> Op2[Operación 2]
+            Op2 --> Check{¿Todo OK?}
+            Check -->|Sí| Commit[COMMIT<br>Persistencia]
+            Check -->|No| Rollback[ROLLBACK<br>Deshacer todo]
+            Commit --> End1((Fin))
+            Rollback --> End2((Fin))
+        </div>
+        <div class="diagram-box__caption">Flujo de una transacción explícita con COMMIT y ROLLBACK</div>
+      </div>
+
       <h2>Propiedades ACID</h2>
 
       <div class="table-responsive-wrapper">

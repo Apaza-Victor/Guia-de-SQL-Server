@@ -30,6 +30,36 @@
 
       <p>Este proyecto final consiste en diseñar e implementar un sistema completo de gestión bibliotecaria. Aplica todos los conocimientos adquiridos a lo largo de la guía.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          graph TD
+            subgraph "Base de Datos SQL Server"
+              Books[Libros]
+              Authors[Autores]
+              Members[Miembros]
+              Loans[Préstamos]
+              BookAuthors[Libros - Autores<br>N:M]
+            end
+            subgraph "Backend"
+              API[API / Servicios]
+            end
+            subgraph "Frontend"
+              Web[App Web]
+              Mobile[App Móvil]
+            end
+            Books --> BookAuthors
+            Authors --> BookAuthors
+            Books --> Loans
+            Members --> Loans
+            Web --> API
+            Mobile --> API
+            API --> Books
+            API --> Members
+            API --> Loans
+        </div>
+        <div class="diagram-box__caption">Arquitectura del Sistema de Gestión de Biblioteca</div>
+      </div>
+
       <div class="callout callout-tip"><div class="callout__title"><i class="bi bi-lightbulb"></i>Expansión del proyecto</div><p>Este proyecto puede extenderse agregando multas, reservas, notificaciones por email, reportes estadísticos con window functions, o una API REST con Node.js/PHP.</p></div>
 
       <h2>Requisitos del Sistema</h2>

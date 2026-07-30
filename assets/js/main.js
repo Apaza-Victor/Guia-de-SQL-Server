@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.top = 0;
   }, { passive: true });
 
+  if (document.querySelector('.mermaid')) {
+    loadMermaid();
+  }
+
   if (typeof AOS !== 'undefined') {
     AOS.init({
       duration: 600,
@@ -90,4 +94,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(tick, 2000);
   })();
+
+  function loadMermaid() {
+    var script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+    script.onload = function() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'dark' : 'default',
+        themeVariables: isDark ? {
+          primaryColor: '#1a2540',
+          primaryTextColor: '#e7ecf5',
+          primaryBorderColor: '#3ddc97',
+          lineColor: '#5b8def',
+          secondaryColor: '#121b2e',
+          tertiaryColor: '#0b1220',
+          fontFamily: '"Inter", sans-serif'
+        } : {
+          primaryColor: '#eef2f8',
+          primaryTextColor: '#111827',
+          primaryBorderColor: '#0e9f6e',
+          lineColor: '#2e63d9',
+          secondaryColor: '#ffffff',
+          tertiaryColor: '#f7f9fc',
+          fontFamily: '"Inter", sans-serif'
+        }
+      });
+      mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+    };
+    document.head.appendChild(script);
+  }
 });

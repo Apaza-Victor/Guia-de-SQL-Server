@@ -30,6 +30,19 @@
 
       <p>Las copias de seguridad son la línea de defensa más importante contra la pérdida de datos. SQL Server ofrece varios tipos de backup para adaptarse a diferentes RPO y RTO.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          flowchart TD
+            DB[(Base de Datos)] --> Full[FULL BACKUP<br>Semanal]
+            Full --> D1[DIFF BACKUP<br>Diario]
+            D1 --> L1[LOG BACKUP<br>Cada hora]
+            L1 --> L2[LOG BACKUP<br>Cada hora]
+            L2 --> L3[LOG BACKUP<br>Cada hora]
+            L3 --> Rest[Restauración<br>FULL + DIFF + LOGS]
+        </div>
+        <div class="diagram-box__caption">Estrategia de backups: FULL + DIFFERENTIAL + TRANSACTION LOG</div>
+      </div>
+
       <div class="callout callout-danger"><div class="callout__title"><i class="bi bi-exclamation-triangle"></i>Prueba tus restores</div><p>Un backup que no se puede restaurar no sirve. Programa pruebas periódicas de restore en un entorno aislado para verificar la integridad de tus copias.</p></div>
 
       <h2>Modelos de Recuperación</h2>

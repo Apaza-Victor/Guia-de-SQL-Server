@@ -1,8 +1,15 @@
+<link rel="icon" type="image/svg+xml" href="assets/img/icons8-microsoft-sql-server.svg">
+<meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F7F9FC" media="(prefers-color-scheme: light)">
+<meta property="og:title" content="SQL Server · De Cero a Experto — Guía Completa">
+<meta property="og:description" content="Guía completa de SQL Server desde cero hasta nivel experto. Aprende T-SQL, diseño de bases de datos, integración con backend y más.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://apaza-victor.github.io/Guia-de-SQL-Server/">
 
 <nav class="navbar navbar-expand-lg site-navbar" id="mainNav">
   <div class="container-fluid container-guide">
     <a class="navbar-brand brand-guide" href="index.html">
-      <span class="brand-dot">◆</span> SQL Server · Guía
+      <img src="assets/img/icons8-microsoft-sql-server.svg" alt="SQL Server" class="brand-logo" width="36" height="24"> Guía de <span class="brand-sql">SQL</span> <span class="brand-server">Server</span>
     </a>
 
     <button class="navbar-toggler border-0 p-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-label="Abrir menú">
@@ -30,7 +37,6 @@
         </li>
         <li class="nav-item"><a class="nav-link nav-link-guide" href="recursos.html">Recursos</a></li>
         <li class="nav-item"><a class="nav-link nav-link-guide" href="glosario.html">Glosario</a></li>
-        <li class="nav-item"><a class="nav-link nav-link-guide" href="acerca.html">Acerca</a></li>
       </ul>
       <div class="d-flex align-items-center gap-2 ms-3">
         <button class="btn btn-icon-header js-search-toggle" aria-label="Buscar">
@@ -46,16 +52,16 @@
 
 <div class="offcanvas offcanvas-end offcanvas-guide" tabindex="-1" id="mobileMenu">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title">Menú</h5>
+    <h5 class="offcanvas-title">Navegación</h5>
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
   </div>
   <div class="offcanvas-body">
-    <div class="d-flex gap-2 mb-3">
-      <button class="btn btn-icon-header flex-grow-1 js-search-toggle" aria-label="Buscar" data-bs-dismiss="offcanvas">
+    <div class="offcanvas-actions">
+      <button class="btn js-search-toggle" aria-label="Buscar" data-bs-dismiss="offcanvas">
         <i class="bi bi-search"></i> Buscar
       </button>
-      <button class="btn theme-toggle flex-grow-1 js-theme-toggle" aria-label="Cambiar tema" data-bs-dismiss="offcanvas">
-        <i class="bi bi-sun theme-toggle-icon"></i> Tema
+      <button class="btn js-theme-toggle" aria-label="Cambiar tema" data-bs-dismiss="offcanvas">
+        <i class="bi bi-sun theme-toggle-icon"></i> <span id="themeLabel">Tema</span>
       </button>
     </div>
     <div class="accordion" id="mobileAccordion">
@@ -212,10 +218,10 @@
 
     </div>
 
-    <hr class="my-3" style="border-color:var(--border);">
-    <a href="recursos.html" class="btn btn-outline-light w-100 mb-2">Recursos externos</a>
-    <a href="glosario.html" class="btn btn-outline-light w-100 mb-2">Glosario</a>
-    <a href="acerca.html" class="btn btn-outline-light w-100">Acerca de</a>
+    <div class="offcanvas-footer-links">
+      <a href="recursos.html"><i class="bi bi-box-arrow-up-right"></i> Recursos externos</a>
+      <a href="glosario.html"><i class="bi bi-book"></i> Glosario</a>
+    </div>
   </div>
 </div>
 

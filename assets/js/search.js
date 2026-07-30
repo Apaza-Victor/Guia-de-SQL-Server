@@ -56,7 +56,7 @@
     { title: "Proyecto integrador", url: "temas/nivel-12-proyecto-final/03-proyecto-integrador.html", level: "Nivel 12 · Proyecto Final" },
     { title: "Recursos externos", url: "recursos.html", level: "Páginas principales" },
     { title: "Glosario de términos SQL", url: "glosario.html", level: "Páginas principales" },
-    { title: "Acerca de esta guía", url: "acerca.html", level: "Páginas principales" }
+
   ];
 
   function init() {

@@ -30,6 +30,18 @@
 
       <p>La programación en T-SQL permite escribir lógica procedural dentro de SQL Server mediante variables, estructuras de control y expresiones condicionales. Este tema cubre las construcciones fundamentales que usarás en procedimientos almacenados, funciones y scripts.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          flowchart TD
+            Start[Inicio] --> Cond{Condición}
+            Cond -->|Verdadero| Action1[Ejecutar Bloque]
+            Cond -->|Falso| Action2[Bloque Alternativo]
+            Action1 --> End[Continuar]
+            Action2 --> End
+        </div>
+        <div class="diagram-box__caption">Estructura de control de flujo IF/ELSE en T-SQL</div>
+      </div>
+
       <h2>Declaración de Variables — <code>DECLARE</code></h2>
       <p>Las variables se declaran con <code>DECLARE</code> especificando nombre (precedido de <code>@</code>) y tipo de datos.</p>
 

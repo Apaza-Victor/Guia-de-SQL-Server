@@ -30,6 +30,16 @@
 
       <p>Una <strong>base de datos</strong> (BD) es un conjunto organizado de datos almacenados electrónicamente, diseñada para facilitar su gestión, acceso, actualización y análisis. A diferencia de un archivo plano (como una hoja de cálculo), una base de datos permite relaciones entre los datos, evita la redundancia y garantiza la integridad de la información.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          graph LR
+            App[Aplicación Cliente] --> DBMS[SQL Server]
+            DBMS --> DB[(Base de Datos)]
+            DBMS --> Log[(Transaction Log)]
+        </div>
+        <div class="diagram-box__caption">Arquitectura cliente-servidor de SQL Server</div>
+      </div>
+
       <h2>Historia breve</h2>
       <p>El concepto de base de datos moderna surgió en la década de 1960 con los sistemas de gestión de bases de datos (DBMS). En 1970, Edgar F. Codd publicó el modelo relacional, sentando las bases para sistemas como SQL Server. A partir de los 2000, surgieron las bases de datos NoSQL para manejar datos no estructurados a gran escala.</p>
 

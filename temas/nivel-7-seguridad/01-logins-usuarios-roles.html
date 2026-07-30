@@ -30,6 +30,26 @@
 
       <p>SQL Server gestiona la seguridad en dos niveles: <strong>servidor</strong> (logins) y <strong>base de datos</strong> (usuarios). Un login proporciona acceso a la instancia; un usuario mapea ese login a una base de datos específica y le otorga permisos dentro de ella.</p>
 
+      <div class="diagram-box" data-aos="fade-up">
+        <div class="mermaid">
+          graph TD
+            subgraph "Nivel Servidor"
+              Login[Login SQL Server]
+              SR[Roles Fijos Servidor<br>sysadmin, dbcreator, etc.]
+            end
+            subgraph "Nivel Base de Datos"
+              User[Usuario de BD]
+              DR[Roles Fijos BD<br>db_owner, db_datareader, etc.]
+              Perm[Permisos<br>SELECT, INSERT, EXECUTE]
+            end
+            Login --> User
+            User --> DR
+            DR --> Perm
+            SR -.->|Hereda| Perm
+        </div>
+        <div class="diagram-box__caption">Jerarquía de seguridad: Login → Usuario → Rol → Permiso</div>
+      </div>
+
       <h2>Logins (nivel servidor)</h2>
 
       <div class="code-block"><span class="code-block__lang">T-SQL</span><pre><code class="language-sql">-- Login con autenticación SQL
