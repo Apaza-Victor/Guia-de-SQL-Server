@@ -458,3 +458,95 @@
   border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
   padding: var(--space-md);
 }
+
+/* ---------- PARTICLES BACKGROUND (topic/resources/glossary) ---------- */
+#particles-js {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+#particles-js canvas { display: block; }
+
+/* ---------- ANIMATED PAGE BACKGROUND (home only) ---------- */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.page-bg__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.10;
+  animation: orbFloat 24s ease-in-out infinite;
+}
+
+.page-bg__orb--1 {
+  width: 600px; height: 600px;
+  background: var(--accent-primary);
+  top: -15%; left: -10%;
+}
+
+.page-bg__orb--2 {
+  width: 500px; height: 500px;
+  background: #1e73be;
+  bottom: -15%; right: -10%;
+  animation-delay: -8s;
+}
+
+.page-bg__orb--3 {
+  width: 400px; height: 400px;
+  background: #e63e32;
+  top: 40%; left: 45%;
+  animation-delay: -16s;
+}
+
+/* -- Topic pages: green tones */
+.page-bg--topic .page-bg__orb--1 { background: #059669; }
+.page-bg--topic .page-bg__orb--2 { background: #047857; bottom: -10%; right: -5%; }
+.page-bg--topic .page-bg__orb--3 { background: #34d399; top: 30%; left: 50%; }
+
+/* -- Resources: amber tones */
+.page-bg--resources .page-bg__orb--1 { background: #d97706; }
+.page-bg--resources .page-bg__orb--2 { background: #b45309; bottom: -10%; right: -5%; }
+.page-bg--resources .page-bg__orb--3 { background: #f59e0b; top: 30%; left: 50%; }
+
+/* -- Glossary: purple tones */
+.page-bg--glossary .page-bg__orb--1 { background: #7c3aed; }
+.page-bg--glossary .page-bg__orb--2 { background: #6d28d9; bottom: -10%; right: -5%; }
+.page-bg--glossary .page-bg__orb--3 { background: #a78bfa; top: 30%; left: 50%; }
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(60px, -40px) scale(1.1); }
+  50% { transform: translate(-30px, 50px) scale(0.9); }
+  75% { transform: translate(40px, 20px) scale(1.05); }
+}
+
+.page-bg__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.page-bg__scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  opacity: 0.25;
+  animation: scanMove 6s linear infinite;
+}
+
+@keyframes scanMove {
+  0% { top: 0; }
+  100% { top: 100%; }
+}

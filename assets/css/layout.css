@@ -43,6 +43,7 @@ body {
 .nav-link-guide:hover,
 .nav-link-guide.active {
   color: var(--accent-primary) !important;
+  text-decoration: none;
 }
 
 .dropdown-menu-guide {
@@ -60,6 +61,7 @@ body {
 .dropdown-menu-guide .dropdown-item:hover {
   background-color: rgba(var(--accent-primary-rgb), 0.12);
   color: var(--accent-primary);
+  text-decoration: none;
 }
 
 .theme-toggle {
